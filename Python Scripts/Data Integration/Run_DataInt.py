@@ -16,6 +16,7 @@ from utils import import_fc_dataset, sort_nmog, assign_study_column, str_float
 from connect_with_mysql import*
 output_db=connect_db('neiva_output_db')
 
+
 '''
 This script integrates primary database tables into a unified dataset. 
 The functions employed in this integration
@@ -59,8 +60,6 @@ mdf=mdf.reset_index(drop=True)
 # Adjusts datatype for the 'mm' column
 mdf=str_float(mdf,'mm')
 
-mdf.to_sql(name='IntData',con=output_db, if_exists='replace', index=False)
+mdf.to_sql(name='Integrated_EF',con=output_db, if_exists='replace', index=False)
 print('Updated the Integrated dataset in NEIAV_db.sql')
-
-
 

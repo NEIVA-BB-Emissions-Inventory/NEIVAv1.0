@@ -22,7 +22,7 @@ bk_db=connect_db('backend_db')
 efcoldf=pd.read_sql('select * from bkdb_info_efcol', con=bk_db) 
 
 # Load the integrated datase.
-intdf=pd.read_sql('select * from IntData', con=output_db) 
+intdf=pd.read_sql('select * from Integrated_EF', con=output_db) 
 
 # Calculate NOx as equivalent to NO.
 intdf=calc_NOx_as_NO (intdf)
@@ -52,7 +52,7 @@ avgdf = round_avg_cols(avgdf)
 avgdf=fc_calc(avgdf)  
 
 # Rearrange columns in the final dataset.
-avgdf=rearrange_col_finaldf(avgdf)
+#avgdf=rearrange_col_finaldf(avgdf)
 
 # Store the Recommended EF dataset in the 'Recommended_EF' table of 'neiva_output_db'.
 avgdf.to_sql(name = 'Recommended_EF', con=output_db, if_exists='replace', index=False)

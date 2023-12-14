@@ -38,7 +38,7 @@ def get_lab_study_avg(intdf,efcoldf):
     # getting the list of unique fire types from efcoldf(information table of all ef columns of pdb)
     efcoldf=sort_by_fire_type_year(efcoldf)
     fire_type_ll=efcoldf['fire_type'].unique()
-    fire_type_ll = set(fire_type_ll) - {'cookstove', 'open cooking', 'dung burning', 'charcoal burning'}
+    fire_type_ll = set(fire_type_ll) - {'cookstove', 'open cooking', 'dung burning', 'charcoal burning','coal burning'}
     for ft in fire_type_ll:
         study_ll=efcoldf['study'][efcoldf['fire_type']==ft].unique().tolist() # the list of unique study of a specific fire type.
         df=pd.DataFrame()

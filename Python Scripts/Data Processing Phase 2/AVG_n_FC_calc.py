@@ -227,7 +227,7 @@ def fc_calc(df):
         ll=get_ind_list_sfc(sfc,formula)
         # Iterate over the indices and calculate FC.
         for k in range(len(ll)):
-            sdf=sfc[sfc.index.isin(ll[i])]
+            sdf=sfc[sfc.index.isin(ll[k])]
             df=Get_fc_calc(sdf,df)
     
     # Remove rows with misisng values of average EF columns.
