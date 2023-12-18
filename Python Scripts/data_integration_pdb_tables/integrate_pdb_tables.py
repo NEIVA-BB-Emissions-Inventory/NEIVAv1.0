@@ -4,8 +4,8 @@ Created on Tue Mar  8 12:07:36 2022
 """
 
 import pandas as pd
-from order_formula import *
-from pretty_table import *
+from rearrange_molecule import *
+from display_pretty_table import *
 
 '''
 Establishing Database Connections:

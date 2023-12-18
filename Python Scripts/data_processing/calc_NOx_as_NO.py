@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Mar  8 19:58:10 2022
+Created on Mon Dec 18 12:10:25 2023
+
 @author: samiha
 """
 
@@ -12,15 +13,6 @@ from utils import GrpCol
 
 from connect_with_mysql import connect_db
 bk_db=connect_db('backend_db')
-
-
-def get_ind(intdf):
-    com_df=pd.read_sql('select * from bkdb_imp_comList_for_calc', con=bk_db)
-    co_ind=intdf[intdf['id']==com_df['id'][0]].index[0]
-    co2_ind=intdf[intdf['id']==com_df['id'][2]].index[0]
-    no_ind=intdf[intdf['id']==com_df['id'][1]].index[0]
-    no2_ind=intdf[intdf['id']==com_df['id'][3]].index[0]
-    return co_ind,co2_ind,no_ind,no2_ind
 
 def calc_NOx_as_NO (intdf):
     '''
@@ -41,7 +33,3 @@ def calc_NOx_as_NO (intdf):
         intdf.loc[NOx_ind, col] = intdf[col].iloc[no2_ind] * (30/46) + intdf[col].iloc[no_ind]
     
     return intdf
-
-
-
-

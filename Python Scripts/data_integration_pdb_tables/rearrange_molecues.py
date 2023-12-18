@@ -11,7 +11,7 @@ from connect_with_mysql import *
 primary_db=connect_db('primary_db')
 
 
-from pretty_table import *
+from display_pretty_table import *
 
 def Get_molec_formula():
     '''

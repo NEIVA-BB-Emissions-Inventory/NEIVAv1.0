@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Aug  7 11:52:54 2023
+Created on Mon Dec 18 12:34:07 2023
 
 @author: samiha
 """
 
 import pandas as pd
-from connect_with_mysql import*
+import numpy as np
 
-con=connect_db('NEIVA_db')
-
+from connect_with_mysql import *
+n_con=connect_db('NEIVA_db')
+legacy_db=connect_db('legacy_db')
+raw_db=connect_db('raw_db')
+primary_db=connect_db('primary_db')
+bk_db=connect_db('backend_db')
 
 data=pd.read_sql('select * from info_table_name', con=con)
 efcoldf=pd.read_sql('select * from info_table', con=con)
@@ -84,7 +88,6 @@ def assign_multiple_fire_type (data, efcoldf):
     data=data.drop(columns=['fire_type_x','fire_type_y'])    
     return data
 
-
 def assign_pollutant_catagory (data):
     
     for i in range(len(data)):
@@ -111,7 +114,6 @@ def assign_pollutant_catagory (data):
         data.loc[i,'pollutant category']=', '.join(sorted_list)
         
     return data
-    
 
 def assign_year_col_efcoldf(efcoldf):
     for i in efcoldf[~efcoldf['efcol'].str.contains('kagi')].index:
@@ -153,15 +155,37 @@ def assign_legend_col(efcoldf):
     return efcoldf
 
 
-
-
-
-
-
-
-
-
-
-
-
+def assign_study_column(nmogdf):
+    '''
+    Assigns appropriate study names to each row in the 'nmogdf' dataframe based on 
+    the non-null emission factor columns present in that row.
     
+    The function fetches the study info from 'bkdb_info_efcol' table, reorders 
+    them based on year, and then maps the study name to the corresponding row in 
+    'nmogdf' dataframe. In case of overlapping studies, specific naming adjustments 
+    are made.
+    
+    Parameters:
+        nmogdf (pd.DataFrame): The dataframe containing emission factor data.
+    
+    Returns:
+        pd.DataFrame: The dataframe 'nmogdf' updated with 'study' column.
+    '''
+    
+    efcoldf=pd.read_sql('select * from bkdb_info_efcol', con=bk_db)
+    efcols=GrpCol(nmogdf)[2]
+    
+    efcoldf=efcoldf.sort_values(by=['year','year_akagi_data'], ascending=False)
+    efcoldf=efcoldf.reset_index(drop=True)
+    
+    # overlapping study between ldb and rdb
+    for i in efcoldf[efcoldf['study']=='Akagi_11(stockwell15)'].index:
+        efcoldf.loc[i,'study']='stockwell15'
+    
+    for i in range(len(nmogdf)):
+        efdat=list(nmogdf[efcols].iloc[i].dropna().index)
+        st=list(efcoldf['study'][efcoldf['efcol'].isin(efdat)].unique())
+        nmogdf.loc[i,'study']=(',').join(st)
+    return nmogdf
+
+
