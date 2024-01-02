@@ -8,7 +8,7 @@ Created on Tue Mar  8 19:40:04 2022
 import pandas as pd
 import numpy as np
 import pubchempy as pcp
-from sort_molec_formula import exact_mm_calulator
+from NEIVA.python_script.data_integration_process.sort_molec_formula import exact_mm_calulator
 
 '''
 Establishing Database Connections:
@@ -16,7 +16,7 @@ This section imports the necessary functions to connect to various
 databases and then initializes connections to 
 five specific databases: NEIVA_db, legacy_db, raw_db, primary_db, and backend_db.
 '''
-from connect_with_mysql import *
+from NEIVA.python_script.connect_with_mysql import *
 n_con=connect_db('NEIVA_db')
 legacy_db=connect_db('legacy_db')
 raw_db=connect_db('raw_db')

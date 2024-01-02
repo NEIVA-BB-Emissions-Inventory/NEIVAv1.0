@@ -8,8 +8,7 @@ Created on Mon Jan  1 13:30:57 2024
 import pandas as pd
 import numpy as np
 
-from connect_with_mysql import *
-n_con=connect_db('NEIVA_db')
+from NEIVA.python_script.connect_with_mysql import *
 legacy_db=connect_db('legacy_db')
 raw_db=connect_db('raw_db')
 primary_db=connect_db('primary_db')

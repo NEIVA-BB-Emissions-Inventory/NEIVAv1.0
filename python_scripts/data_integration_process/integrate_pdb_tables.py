@@ -4,8 +4,8 @@ Created on Tue Mar  8 12:07:36 2022
 """
 
 import pandas as pd
-from sort_molec_formula import *
-from display_pretty_table import *
+from NEIVA.python_script.data_integration_process.sort_molec_formula import *
+from NEIVA.python_script.data_integration_process.display_pretty_table import *
 
 '''
 Establishing Database Connections:
@@ -13,7 +13,7 @@ This section imports the necessary functions to connect to various
 databases and then initializes connections to 
 five specific databases: NEIVA_db, legacy_db, raw_db, primary_db, and backend_db.
 '''
-from connect_with_mysql import connect_db, get_table_name
+from NEIVA.python_script.connect_with_mysql import *
 legacy_db=connect_db('legacy_db')
 raw_db=connect_db('raw_db')
 primary_db=connect_db('primary_db')

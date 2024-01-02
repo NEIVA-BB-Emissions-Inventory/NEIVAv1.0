@@ -10,8 +10,8 @@ import numpy as np
 import pubchempy as pcp
 import sys
 
-from data_formatting_functions import AltName,GrpCol
-from categorize_chemical_formula import *
+from NEIVA.python_script.data_integration_process.data_formatting_functions import AltName,GrpCol
+from NEIVA.python_script.data_integration_process.categorize_chemical_formula import *
 
 '''
 Establishing Database Connections:
