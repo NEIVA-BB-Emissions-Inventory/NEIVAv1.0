@@ -1,22 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Dec 18 12:44:36 2023
+Created on Mon Jan  1 13:36:48 2024
 
 @author: samiha
 """
 
 import pandas as pd
 import numpy as np
-
 from connect_with_mysql import *
-legacy_db=connect_db('legacy_db')
-raw_db=connect_db('raw_db')
 primary_db=connect_db('primary_db')
-bk_db=connect_db('backend_db')
 
-
-def classify_chemical_formula(df):
+def assign_formula_type(df):
     '''
     Categorizes chemical formulas from the input dataframe.
     
@@ -77,4 +72,3 @@ def classify_chemical_formula(df):
             f_spec_one_lc.append(f)
     
     return f_no_spec, f_spec, f_spec_multiple_lc, f_spec_one_lc 
-

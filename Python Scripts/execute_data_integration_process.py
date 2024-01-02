@@ -9,11 +9,12 @@ Github: @SamihaShahid
 import pandas as pd
 import numpy as np
 
-from DataInt_mainFunc import *
-from Merge_MultLumpCom import *
-from Get_LumpCom_Spec import *
-from utils import import_fc_dataset, sort_nmog, assign_study_column, str_float
+from integrate_pdb_tables import *
+from merge_lumped_com import *
+from align_lumped_com_and_spec import *
+from data_formatting_functions import  *
 from connect_with_mysql import*
+
 output_db=connect_db('neiva_output_db')
 
 
@@ -26,32 +27,30 @@ The final, integrated dataset is saved as IntData in the output_db.
 '''
 
 # Integrates the primary database datasets.
-int_df=DataInt()
+int_df=integrate_tables()
 
 # Extracts dataframe where pollutant_category is NMOC_g 
-nmogdf=Get_nmog(int_df)   
+nmogdf=fetch_nmog(int_df)   
+nmogdf=assign_study_column(nmogdf)
 
 # Processes and manages record with multiple lumped compounds.
-r_iddf, iddf =reduce_multiple_LumCom(nmogdf)
+r_iddf, iddf =merge_lumped_compound_same_formula(nmogdf)
 
 # Updates nmogdf by replacing iddf with r_iddf
 nmogdf=insert_rdf_nmogdf(nmogdf,r_iddf,iddf) 
 
-# Assigns study column to nmogdf
-nmogdf=assign_study_column(nmogdf)
-
 # Decomposes lumped compounds and aligns with individual compounds
-lc_spec_df=Get_LumCom_Spec(nmogdf)
+lc_spec_df=sync_lumped_compound_and_speciation(nmogdf)
 
 # Sorts nmogdf for further processing
-nmogdf=sort_nmog(nmogdf)
+nmogdf=sort_nmog_data(nmogdf)
 
 # Loads the dataset for fractional contribution calculations to the backend database
 import_fc_dataset(nmogdf,lc_spec_df)
 
 # Sorts and merges inorganic gases, particulate matter data with nmogdf
-igdf=sort_igdf(int_df)
-pmdf=sort_pmdf(int_df)
+igdf=sort_inorganic_gas_data(int_df)
+pmdf=sort_particulate_matter_data(int_df)
 mdf=igdf.append(nmogdf).append(pmdf)
 
 # Storing the final integrated dataset in the database 

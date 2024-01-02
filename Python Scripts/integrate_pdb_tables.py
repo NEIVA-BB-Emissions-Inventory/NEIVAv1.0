@@ -4,7 +4,7 @@ Created on Tue Mar  8 12:07:36 2022
 """
 
 import pandas as pd
-from rearrange_molecule import *
+from sort_molec_formula import *
 from display_pretty_table import *
 
 '''
@@ -14,14 +14,13 @@ databases and then initializes connections to
 five specific databases: NEIVA_db, legacy_db, raw_db, primary_db, and backend_db.
 '''
 from connect_with_mysql import connect_db, get_table_name
-n_con=connect_db('NEIVA_db')
 legacy_db=connect_db('legacy_db')
 raw_db=connect_db('raw_db')
 primary_db=connect_db('primary_db')
 bk_db=connect_db('backend_db')
 
 
-def DataInt():
+def integrate_tables():
     '''
     Integrates all primary_db datasets into a single dataframe.
     
@@ -74,7 +73,7 @@ def DataInt():
     return df
 
 
-def sort_igdf(df):
+def sort_inorganic_gas_data(df):
     '''
     Sorts the input dataset by molar mass for inorganic gases and methane.
     Input:
@@ -86,7 +85,7 @@ def sort_igdf(df):
     igdf=igdf.sort_values(by='mm').reset_index(drop=True)
     return igdf
 
-def sort_pmdf(df):
+def sort_particulate_matter_data(df):
     '''
     Sorts the particulate matter dataset based on a predefined sequence.
     Input:
@@ -105,10 +104,53 @@ def sort_pmdf(df):
     
     return pmdf
 
-def Get_nmog(df):
+def fetch_nmog(df):
     nmogdf=df[df['pollutant_category']=='NMOC_g']
     nmogdf=nmogdf.sort_values(by=['mm','formula','id']).reset_index(drop=True)
     print('Non-Methane Organic Compounds Gas-Phase (NMOC_g) Data Frame: [ROW, COLUMN] ='+ '['+str(len(nmogdf))+' '+str(len(nmogdf.columns))+']' )
     return nmogdf
 
-
+def sort_nmog_data(nmogdf):
+    '''
+    Sorts the NMOG (Non-Methane Organic Gases) dataframe based on molecular weight and 
+    different criteria of the 'id' column.
+    
+    The function primarily sorts the dataframe first by the molecular mass. Within each molecular mass, 
+    it further sorts rows based on the presence of 'InChI' in the 'id' column, followed by 
+    rows without 'InChI' but not in the rdb_hatch15 dataset, and then rows with ids present 
+    in the rdb_hatch15 dataset.
+    
+    Parameters:
+    - nmogdf: Input dataframe containing NMOG data.
+    
+    Returns:
+    - nmogdf_sorted: A sorted dataframe based on the above criteria.
+    '''
+    # Loadig the 'rdb_hatch15' dataste.
+    hid = pd.read_sql('select * from rdb_hatch15',con=raw_db)
+    hid = hid[hid['h_id'].notna()].reset_index(drop=True)
+    
+    # Sorting nmogdf by molecular mass.
+    nmogdf=nmogdf.sort_values(by=['mm']).reset_index(drop=True)
+    
+    # List of unique formula of 'nmogdf'
+    uf=list(nmogdf['formula'].unique())
+    
+    # Sorting each unique formula based on the criteria.
+    nmogdf_sorted=pd.DataFrame()
+    for f in uf:
+        formula_df = nmogdf[nmogdf['formula']==f]
+        # Select rows where 'id' contains 'InChI'
+        aa1=formula_df[formula_df['id'].str.contains('InChI')]
+        aa1=aa1.sort_values(by='id')
+        
+        # Select rows where 'id' does not contains InChI and is not in hid.
+        aa2=formula_df[~formula_df['id'].str.contains('InChI')][~formula_df['id'].isin(hid['h_id'])]
+        
+        # Select rows where 'id' does not contains InChI but is in hid.
+        aa3=formula_df[~formula_df['id'].str.contains('InChI')][formula_df['id'].isin(hid['h_id'])]
+        
+        aa=aa2.append(aa1).append(aa3)
+        nmogdf_sorted=nmogdf_sorted.append(aa).reset_index(drop=True)
+    
+    return nmogdf_sorted

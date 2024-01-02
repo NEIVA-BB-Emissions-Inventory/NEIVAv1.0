@@ -8,7 +8,7 @@ Created on Tue Mar  8 19:40:04 2022
 import pandas as pd
 import numpy as np
 import pubchempy as pcp
-from order_formula import exact_mm_calulator
+from sort_molec_formula import exact_mm_calulator
 
 '''
 Establishing Database Connections:
@@ -22,7 +22,7 @@ legacy_db=connect_db('legacy_db')
 raw_db=connect_db('raw_db')
 primary_db=connect_db('primary_db')
 bk_db=connect_db('backend_db')
-    
+
 def AltName(df,df_altName):
     """
     Replaces the 'compound' names in the input dataframe 'df' based on 
@@ -72,51 +72,6 @@ def GrpCol(df):
     return arranged_col, identityCol, efcol, idcol, avgcol, ncol, stdcol
 
 
-def sort_nmog(nmogdf):
-    '''
-    Sorts the NMOG (Non-Methane Organic Gases) dataframe based on molecular weight and 
-    different criteria of the 'id' column.
-    
-    The function primarily sorts the dataframe first by the molecular mass. Within each molecular mass, 
-    it further sorts rows based on the presence of 'InChI' in the 'id' column, followed by 
-    rows without 'InChI' but not in the rdb_hatch15 dataset, and then rows with ids present 
-    in the rdb_hatch15 dataset.
-    
-    Parameters:
-    - nmogdf: Input dataframe containing NMOG data.
-    
-    Returns:
-    - nmogdf_sorted: A sorted dataframe based on the above criteria.
-    '''
-    # Loadig the 'rdb_hatch15' dataste.
-    hid = pd.read_sql('select * from rdb_hatch15',con=raw_db)
-    hid = hid[hid['h_id'].notna()].reset_index(drop=True)
-    
-    # Sorting nmogdf by molecular mass.
-    nmogdf=nmogdf.sort_values(by=['mm']).reset_index(drop=True)
-    
-    # List of unique formula of 'nmogdf'
-    uf=list(nmogdf['formula'].unique())
-    
-    # Sorting each unique formula based on the criteria.
-    nmogdf_sorted=pd.DataFrame()
-    for f in uf:
-        formula_df = nmogdf[nmogdf['formula']==f]
-        # Select rows where 'id' contains 'InChI'
-        aa1=formula_df[formula_df['id'].str.contains('InChI')]
-        aa1=aa1.sort_values(by='id')
-        
-        # Select rows where 'id' does not contains InChI and is not in hid.
-        aa2=formula_df[~formula_df['id'].str.contains('InChI')][~formula_df['id'].isin(hid['h_id'])]
-        
-        # Select rows where 'id' does not contains InChI but is in hid.
-        aa3=formula_df[~formula_df['id'].str.contains('InChI')][formula_df['id'].isin(hid['h_id'])]
-        
-        aa=aa2.append(aa1).append(aa3)
-        nmogdf_sorted=nmogdf_sorted.append(aa).reset_index(drop=True)
-    
-    return nmogdf_sorted
-
 def rearrange_col_finaldf (df):
     '''
     Rearranges the columns of the input dataframe based on a specific order 
@@ -147,6 +102,38 @@ def rearrange_col_finaldf (df):
     df=df[total_col]
     return df
 
+def assign_study_column(nmogdf):
+    '''
+    Assigns appropriate study names to each row in the 'nmogdf' dataframe based on 
+    the non-null emission factor columns present in that row.
+    
+    The function fetches the study info from 'bkdb_info_efcol' table, reorders 
+    them based on year, and then maps the study name to the corresponding row in 
+    'nmogdf' dataframe. In case of overlapping studies, specific naming adjustments 
+    are made.
+    
+    Parameters:
+        nmogdf (pd.DataFrame): The dataframe containing emission factor data.
+    
+    Returns:
+        pd.DataFrame: The dataframe 'nmogdf' updated with 'study' column.
+    '''
+    
+    efcoldf=pd.read_sql('select * from bkdb_info_efcol', con=bk_db)
+    efcols=GrpCol(nmogdf)[2]
+    
+    efcoldf=efcoldf.sort_values(by=['year','year_akagi_data'], ascending=False)
+    efcoldf=efcoldf.reset_index(drop=True)
+    
+    # overlapping study between ldb and rdb
+    for i in efcoldf[efcoldf['study']=='Akagi_11(stockwell15)'].index:
+        efcoldf.loc[i,'study']='stockwell15'
+    
+    for i in range(len(nmogdf)):
+        efdat=list(nmogdf[efcols].iloc[i].dropna().index)
+        st=list(efcoldf['study'][efcoldf['efcol'].isin(efdat)].unique())
+        nmogdf.loc[i,'study']=(',').join(st)
+    return nmogdf
 
 def str_float(df, col):
     '''
@@ -167,7 +154,4 @@ def str_float(df, col):
             if str(df[col].iloc[i])!='None':
                 df.loc[i,col]=float(df[col].iloc[i])
     return df
-
-
-
 

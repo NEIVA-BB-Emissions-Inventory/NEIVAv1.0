@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Dec 18 12:37:17 2023
+Created on Mon Jan  1 13:30:57 2024
 
 @author: samiha
 """
@@ -9,12 +9,11 @@ import pandas as pd
 import numpy as np
 
 from connect_with_mysql import *
-
+n_con=connect_db('NEIVA_db')
 legacy_db=connect_db('legacy_db')
 raw_db=connect_db('raw_db')
 primary_db=connect_db('primary_db')
 bk_db=connect_db('backend_db')
-
 
 def percent_c_correction_factor(dd, table_name):
     '''

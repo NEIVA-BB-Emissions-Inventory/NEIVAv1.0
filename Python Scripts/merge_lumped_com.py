@@ -7,7 +7,8 @@ Created on Tue Mar  8 12:38:36 2022
 import pandas as pd
 import numpy as np
 import pubchempy as pcp
-from utils import GrpFormula,AltName,GrpCol
+from data_formatting_functions import AltName,GrpCol
+from categorize_chemical_formula import *
 
 '''
 Establishing Database Connections:
@@ -16,14 +17,13 @@ databases and then initializes connections to
 five specific databases: NEIVA_db, legacy_db, raw_db, primary_db, and backend_db.
 '''
 from connect_with_mysql import*
-n_con=connect_db('NEIVA_db')
 legacy_db=connect_db('legacy_db')
 raw_db=connect_db('raw_db')
 primary_db=connect_db('primary_db')
 bk_db=connect_db('backend_db')
 
 
-def Get_lcid_df(f_spec_lc,df):
+def get_lumped_com_id_df(f_spec_lc,df):
     '''
     Extract lumped compound IDs for a given formula list from a dataframe.
     
@@ -70,7 +70,7 @@ def select_max_len_CompoundStr(com_ll,id_ll):
     selected_id=id_ll[selected_ind]
     return  selected_id  
 
-def slc_iddf_Mult_lcid(iddf,formula):
+def select_id_df(iddf,formula):
     '''
     For each formula in the provided list, the function selects the compound
     with the longest name among those with multiple lumped compounds. 
@@ -93,7 +93,7 @@ def slc_iddf_Mult_lcid(iddf,formula):
     iddf=iddf.reset_index(drop=True)
     return iddf
     
-def Mult_row2single_Row(df):
+def merge_rows(df):
     '''
     Transposes multiple rows with the same formula into a single row 
     by taking the mean of their values.
@@ -117,12 +117,12 @@ def Mult_row2single_Row(df):
 
 def check_r_iddf (iddf, r_iddf):
     '''
-    Validates the results of the Mult_row2single_Row() function by comparing the number of columns 
+    Validates the results of the merge_rows() function by comparing the number of columns 
     in the original and reduced dataframes for each unique formula.
 
     Parameters:
     - iddf: Original dataframe containing multiple rows for specific formulas.
-    - r_iddf: Reduced dataframe after applying the Mult_row2single_Row() function.
+    - r_iddf: Reduced dataframe after applying the merge_rows() function.
 
     Returns:
     - "Clear" if the validation passes for all formulas, otherwise prints the formulas that didn't match.
@@ -135,23 +135,27 @@ def check_r_iddf (iddf, r_iddf):
         
         col=[]
         for i in range(len(ddf)):
-            xx=set(ddf.iloc[i].dropna().index)-{'mm','formula','compound','pollutant_category','id'}
+            xx=set(ddf.iloc[i].dropna().index)-{'mm','formula','compound','pollutant_category','id','study'}
             col=col+list(xx)
             
         aa=len(set(col))
-        bb=len(set(r_iddf[r_iddf['formula']==u].T.dropna().index)-{'mm','formula','compound','pollutant_category','id'})
+        bb=len(set(r_iddf[r_iddf['formula']==u].T.dropna().index)-{'mm','formula','compound','pollutant_category','id','study'})
             
         if aa==bb:
-            print('y')
+            print('______________________________________________________________________________________________________________')
+            print('Formula-'+u, 'Merged compounds-')
+            print(iddf[['compound','study']][iddf['formula']==u].reset_index(drop=True))
+            print('______________________________________________________________________________________________________________')
         else:
-            print(u, 'n')
+            print(u, 'error: Check the merging step')
             ch.append(u)
     if len(ch)==0:
+        print('Rows merging process is verified.')
         return 'Clear'
-                        
+                                
 
 
-def reduce_multiple_LumCom(nmogdf):
+def merge_lumped_compound_same_formula(nmogdf):
     '''
     Merges rows with the same chemical formula if they represent lumped compounds.
     A limped compound is identified when its ID is not derived from retention index 
@@ -166,10 +170,10 @@ def reduce_multiple_LumCom(nmogdf):
     '''
     
     # List of chemical formula that has multiple lumped compounds.
-    f_spec_multiple_lc=GrpFormula(nmogdf)[2]
+    f_spec_multiple_lc=assign_formula_type(nmogdf)[2]
     
     # Dataframe with the lumped compound ids
-    iddf=Get_lcid_df(f_spec_multiple_lc,nmogdf)
+    iddf=get_lumped_com_id_df(f_spec_multiple_lc,nmogdf)
     
     #Improting to backend_db
     iddf[GrpCol(iddf)[1]+['id']].to_sql(name='bkdb_nmog_MultLumCom',con=bk_db, if_exists='replace', index=False)
@@ -181,11 +185,11 @@ def reduce_multiple_LumCom(nmogdf):
     f_spec_multiple_lc=set(f_spec_multiple_lc)-set(slcdf) 
     
     # Updating the 'iddf' dataframe with the new formula list.
-    iddf=Get_lcid_df(f_spec_multiple_lc,nmogdf) 
+    iddf=get_lumped_com_id_df(f_spec_multiple_lc,nmogdf) 
     
     # Selects the identifier of the lumped compound for a specific formula.
     # The compound name with the longest string length is chosen. 
-    slc_iddf=slc_iddf_Mult_lcid(iddf,f_spec_multiple_lc) 
+    slc_iddf=select_id_df(iddf,f_spec_multiple_lc) 
     
     # Store the identity columns from 'slc_iddf'.
     slc_iddf=slc_iddf[GrpCol(slc_iddf)[1]+['id']] 
@@ -199,7 +203,7 @@ def reduce_multiple_LumCom(nmogdf):
     slc_iddf = AltName(slc_iddf, df_altName)
     
     # Transpose the EF columns so that multiple rows of a single formula become a single row.
-    iddf_ef=Mult_row2single_Row(iddf) 
+    iddf_ef=merge_rows(iddf) 
     
     r_iddf=pd.DataFrame()
     r_iddf=slc_iddf.merge(iddf_ef, on='formula', how='left')
@@ -207,8 +211,10 @@ def reduce_multiple_LumCom(nmogdf):
     r_iddf=r_iddf[GrpCol(r_iddf)[0]] # the columns are arranged
     
     check_r_iddf (iddf, r_iddf)
-    print('Length of r_iddf: '+str(len(r_iddf)))
-    print('Length of iddf: '+str(len(iddf)))
+    print('+--------------------------------------------------------------------------------------------+')
+    print('Length of merged dataframe : '+str(len(r_iddf)))
+    print('Length of dataframe containing lumped compound(>1) of a unique formula : '+str(len(iddf)))
+    print('+--------------------------------------------------------------------------------------------+')
     return r_iddf, iddf    
 
 def insert_rdf_nmogdf(nmogdf,rdf,df):
