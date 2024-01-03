@@ -7,11 +7,11 @@ Created on Sat Feb 26 19:32:34 2022
 import pandas as pd
 import numpy as np
 
-from NEIVA.python_script.connect_with_mysql import *
+from NEIVA.python_scripts.connect_with_mysql import *
 primary_db=connect_db('primary_db')
 
 
-from NEIVA.python_script.data_integration_process.display_pretty_table import *
+from NEIVA.python_scripts.data_integration_process.display_pretty_table import *
 
 def Get_molec_formula():
     '''

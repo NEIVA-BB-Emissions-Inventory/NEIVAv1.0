@@ -8,7 +8,8 @@ Created on Mon Jan  1 13:36:48 2024
 
 import pandas as pd
 import numpy as np
-from NEIVA.python_script.connect_with_mysql import *
+from NEIVA.python_scripts.connect_with_mysql import *
+
 primary_db=connect_db('primary_db')
 
 def assign_formula_type(df):

@@ -6,12 +6,12 @@ Created on Sat Feb 11 14:20:03 2023
 @author: samiha
 """
 
-import pandas as pd
-from sqlalchemy import create_engine
+# import pandas as pd
+# from sqlalchemy import create_engine
 import mysql.connector
 
 
-def connect_db (db):
+def connect_db(db):
     """
     Connects to a MySQL database using SQLAlchemy.
     Input:
@@ -20,8 +20,9 @@ def connect_db (db):
     Returns:
         The connection. 
     """
-    engine = create_engine("mysql://root:Samiha_056@localhost/"+db)
-    con = engine.connect()
+    con = mysql.connector.connect(user='root', password='root', host='localhost', database=db)
+    # engine = create_engine("mysql://root:Samiha_056@localhost/"+db)
+    # con = engine.connect()
     return con
 
 def get_table_name(database_name):
