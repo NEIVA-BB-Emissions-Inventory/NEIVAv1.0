@@ -112,7 +112,8 @@ def merge_rows(df):
     ef_df=pd.DataFrame()
     for formula in uf:
         aa=pd.DataFrame(df[efcols][df['formula']==formula].mean()).transpose()
-        ef_df=ef_df.append(aa)
+        # ef_df=ef_df.append(aa)
+        ef_df = pd.concat([ef_df,aa], ignore_index=True)
     ef_df=ef_df.reset_index(drop=True)
     ef_df['formula']=uf
     return ef_df
@@ -234,7 +235,8 @@ def insert_rdf_nmogdf(nmogdf,rdf,df):
     - Updated NMOC_g dataset
     '''
     nmogdf=nmogdf[~nmogdf['id'].isin(df['id'])]
-    nmogdf=nmogdf.append(rdf).reset_index(drop=True)
+    nmogdf = pd.concat([nmogdf,rdf], ignore_index=True)
+    # nmogdf=nmogdf.append(rdf).reset_index(drop=True)
     print('Length of NMOC_g dataset: '+str(len(nmogdf)))
     return nmogdf
 
