@@ -5,8 +5,8 @@ Created on Tue Mar  8 12:38:36 2022
 @author: Samiha Shahid
 """
 import pandas as pd
-import numpy as np
-import pubchempy as pcp
+# import numpy as np
+# import pubchempy as pcp
 from NEIVA.python_scripts.data_integration_process.data_formatting_functions import AltName,GrpCol
 from NEIVA.python_scripts.data_integration_process.categorize_chemical_formula import *
 
