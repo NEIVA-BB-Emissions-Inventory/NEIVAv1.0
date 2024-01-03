@@ -7,7 +7,7 @@ Created on Tue Mar  8 19:40:04 2022
 
 import pandas as pd
 import numpy as np
-import pubchempy as pcp
+# import pubchempy as pcp
 from NEIVA.python_scripts.data_integration_process.sort_molec_formula import exact_mm_calulator
 
 '''
