@@ -6,7 +6,6 @@ Created on Tue Mar  8 12:41:36 2022
 """
 
 import pandas as pd
-import numpy as np
 import pubchempy as pcp
 from sqlalchemy import text
 import sys

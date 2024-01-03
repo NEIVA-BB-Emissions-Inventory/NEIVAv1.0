@@ -20,8 +20,6 @@ def connect_db(db):
         The connection. 
     """
     engine = create_engine("mysql+pymysql://root:root@localhost/"+db)
-    # con = mysql.connector.connect(user='root', password='root', host='localhost', database=db)
-    # engine = create_engine("mysql://root:Samiha_056@localhost/"+db)
     con = engine.connect()
     return con
 

@@ -7,7 +7,7 @@ Created on Tue Mar  8 19:40:04 2022
 
 import pandas as pd
 import numpy as np
-# import pubchempy as pcp
+from sqlalchemy import text
 from NEIVA.python_scripts.data_integration_process.sort_molec_formula import exact_mm_calulator
 
 '''
@@ -90,7 +90,7 @@ def rearrange_col_finaldf (df):
     '''
     
     bk_db=connect_db('backend_db')
-    efcoldf=pd.read_sql('select * from bkdb_info_efcol', con=bk_db)
+    efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
     ft_ll=efcoldf['fire_type'].unique()
     
     col_ll=[]
@@ -120,7 +120,7 @@ def assign_study_column(nmogdf):
         pd.DataFrame: The dataframe 'nmogdf' updated with 'study' column.
     '''
     bk_db=connect_db('backend_db')
-    efcoldf=pd.read_sql('select * from bkdb_info_efcol', con=bk_db)
+    efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
     efcols=GrpCol(nmogdf)[2]
     
     efcoldf=efcoldf.sort_values(by=['year','year_akagi_data'], ascending=False)
