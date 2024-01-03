@@ -61,7 +61,7 @@ def integrate_tables():
         unmatched=data_id[~data_id['id'].isin(df['id'])]
         # df=df.append(unmatched)
         df = pd.concat([df,unmatched], ignore_index=True)
-        df=df.merge(data_ef,on='id',how='left')
+        df = df.merge(data_ef,on='id',how='left')
         
     assert len(df[df['id'].duplicated()]) == 0
     assert len(df)==len(df[df.columns[df.columns.str.contains('EF',na=False)]].dropna(how='all'))

@@ -79,8 +79,10 @@ def add_Spec2lumCom(lcdf,nmogdf):
         specdf=nmogdf[nmogdf['id'].isin(llid)]
         if len(specdf)==len(ll):
             print('All individual ids are found in the Integrated Dataset')
-            df=lcdf[i:i+1].append(specdf)
-            lc_spec_df=lc_spec_df.append(df)
+            # df=lcdf[i:i+1].append(specdf)
+            df = pd.concat([lcdf[i:i+1], specdf], ignore_index=True)
+            # lc_spec_df=lc_spec_df.append(df)
+            lc_spec_df = pd.concat([lc_spec_df,df], ignore_index=True)
         print('__________________________________________________________________')
     lc_spec_df=lc_spec_df.reset_index(drop=True)
     return lc_spec_df
