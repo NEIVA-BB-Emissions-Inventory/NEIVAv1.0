@@ -139,7 +139,7 @@ def import_fc_dataset(nmogdf,lc_spec_df):
     specific_fc_df.to_sql(name='bkdb_fc_calc_specific', con=engine, if_exists='replace', index=False)
     
     # Extract simple fractional contribution dataset with only one lumped compound per formula.
-    simple_fc=nmogdf[nmogdf['formula'].isin(GrpFormula(nmogdf)[3])]
+    simple_fc=nmogdf[nmogdf['formula'].isin(assign_formula_type(nmogdf)[3])]
     # Exclude entries present in specific_fc_df.
     simple_fc=simple_fc[~simple_fc['formula'].isin(specific_fc_df['formula'].tolist())]
     
