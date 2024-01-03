@@ -19,11 +19,11 @@ This section imports the necessary functions to connect to various
 databases and then initializes connections to 
 five specific databases: NEIVA_db, legacy_db, raw_db, primary_db, and backend_db.
 '''
-from NEIVA.python_scripts.connect_with_mysql import *
-legacy_db=connect_db('legacy_db')
-raw_db=connect_db('raw_db')
-primary_db=connect_db('primary_db')
-bk_db=connect_db('backend_db')
+from NEIVA.python_scripts.connect_with_mysql import connect_db
+# legacy_db=connect_db('legacy_db')
+# raw_db=connect_db('raw_db')
+# primary_db=connect_db('primary_db')
+# bk_db=connect_db('backend_db')
 
 
 def eliminate_general_terms(df):
@@ -100,6 +100,7 @@ def sync_lumped_compound_and_speciation(nmogdf):
     lcdf=nmogdf[nmogdf['compound'].isin(com)].reset_index(drop=True) 
     
     # Save to backend db for manual inspection
+    bk_db=connect_db('backend_db')
     lcdf[GrpCol(lcdf)[1]+['id']].to_sql(name='bkdb_nmog_LumpedCom',if_exists='replace',con=bk_db,index=False)
     
     # Get altered names to improve search accuracy in PubChem
@@ -131,6 +132,7 @@ def import_fc_dataset(nmogdf,lc_spec_df):
     None. The function performs in-place modifications and exports results to the database.
     '''    
     # Construct specific fractional contribution dataset with aligned lumped compounds and speciation.
+    bk_db=connect_db('backend_db')
     specific_fc_df=lc_spec_df[GrpCol(lc_spec_df)[1]+['id','study']]
     specific_fc_df.to_sql(name='bkdb_fc_calc_specific', con=bk_db, if_exists='replace', index=False)
     
