@@ -7,8 +7,8 @@ Created on Sat Feb 26 19:32:34 2022
 import pandas as pd
 import numpy as np
 
-from NEIVA.python_scripts.connect_with_mysql import *
-primary_db=connect_db('primary_db')
+from NEIVA.python_scripts.connect_with_mysql import connect_db, get_table_name
+# primary_db=connect_db('primary_db')
 
 
 from NEIVA.python_scripts.data_integration_process.display_pretty_table import *
@@ -34,6 +34,7 @@ def Get_molec_formula():
     Requires a connection to the primary database and the 'get_table_name' function to retrieve table names.
     '''
     #__ table names of primary database
+    primary_db = connect_db('primary_db')
     pdb_tbl_names = get_table_name('primary_db')
     
     ss=''
