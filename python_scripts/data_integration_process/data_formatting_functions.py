@@ -16,12 +16,12 @@ This section imports the necessary functions to connect to various
 databases and then initializes connections to 
 five specific databases: NEIVA_db, legacy_db, raw_db, primary_db, and backend_db.
 '''
-from NEIVA.python_scripts.connect_with_mysql import *
-n_con=connect_db('NEIVA_db')
-legacy_db=connect_db('legacy_db')
-raw_db=connect_db('raw_db')
-primary_db=connect_db('primary_db')
-bk_db=connect_db('backend_db')
+from NEIVA.python_scripts.connect_with_mysql import connect_db
+# n_con=connect_db('NEIVA_db')
+# legacy_db=connect_db('legacy_db')
+# raw_db=connect_db('raw_db')
+# primary_db=connect_db('primary_db')
+# bk_db=connect_db('backend_db')
 
 def AltName(df,df_altName):
     """
@@ -89,6 +89,7 @@ def rearrange_col_finaldf (df):
     - df: A dataframe with columns rearranged in the desired order.
     '''
     
+    bk_db=connect_db('backend_db')
     efcoldf=pd.read_sql('select * from bkdb_info_efcol', con=bk_db)
     ft_ll=efcoldf['fire_type'].unique()
     
@@ -118,7 +119,7 @@ def assign_study_column(nmogdf):
     Returns:
         pd.DataFrame: The dataframe 'nmogdf' updated with 'study' column.
     '''
-    
+    bk_db=connect_db('backend_db')
     efcoldf=pd.read_sql('select * from bkdb_info_efcol', con=bk_db)
     efcols=GrpCol(nmogdf)[2]
     
