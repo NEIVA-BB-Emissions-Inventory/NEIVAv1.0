@@ -59,7 +59,8 @@ def integrate_tables():
         data_id=data[idcols]
         data_ef=data[data.filter(like='EF').columns.tolist()+['id']]
         unmatched=data_id[~data_id['id'].isin(df['id'])]
-        df=df.append(unmatched)
+        # df=df.append(unmatched)
+        df = pd.concat([df,unmatched], ignore_index=True)
         df=df.merge(data_ef,on='id',how='left')
         
     assert len(df[df['id'].duplicated()]) == 0
@@ -103,7 +104,8 @@ def sort_particulate_matter_data(df):
     
     pmdf=pd.DataFrame()
     for i in pm_arrange_seq:
-        pmdf=pmdf.append(df[df['pollutant_category']==i])
+        # pmdf=pmdf.append(df[df['pollutant_category']==i])
+        pmdf = pd.concat([pmdf,df[df['pollutant_category']==i]], ignore_index=True)
     
     return pmdf
 
@@ -154,7 +156,9 @@ def sort_nmog_data(nmogdf):
         # Select rows where 'id' does not contains InChI but is in hid.
         aa3=formula_df[~formula_df['id'].str.contains('InChI')][formula_df['id'].isin(hid['h_id'])]
         
-        aa=aa2.append(aa1).append(aa3)
-        nmogdf_sorted=nmogdf_sorted.append(aa).reset_index(drop=True)
+        # aa=aa2.append(aa1).append(aa3)
+        aa = pd.concat([aa2,aa1,aa3], ignore_index=True)
+        # nmogdf_sorted=nmogdf_sorted.append(aa).reset_index(drop=True)
+        nmogdf_sorted = pd.concat([nmogdf_sorted,aa], ignore_index=True)
     
     return nmogdf_sorted

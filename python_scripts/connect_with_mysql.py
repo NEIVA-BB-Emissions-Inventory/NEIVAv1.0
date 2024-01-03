@@ -9,6 +9,7 @@ Created on Sat Feb 11 14:20:03 2023
 # import pandas as pd
 from sqlalchemy import create_engine
 import mysql.connector
+import pandas as pd
 
 def connect_db(db):
     """
@@ -55,7 +56,8 @@ def get_table_name(database_name):
     
     table_name=[]
     for tbl in tables:
-        table_name.append(tbl[0])
+        table_name = pd.append([table_name,tbl[0]], ignore_index=True)
+        # table_name.append(tbl[0])
     
     # Close the cursor and connection
     cursor.close()
