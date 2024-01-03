@@ -16,11 +16,11 @@ This section imports the necessary functions to connect to various
 databases and then initializes connections to 
 five specific databases: NEIVA_db, legacy_db, raw_db, primary_db, and backend_db.
 '''
-from NEIVA.python_scripts.connect_with_mysql import *
-legacy_db=connect_db('legacy_db')
-raw_db=connect_db('raw_db')
-primary_db=connect_db('primary_db')
-bk_db=connect_db('backend_db')
+from NEIVA.python_scripts.connect_with_mysql import connect_db
+# legacy_db=connect_db('legacy_db')
+# raw_db=connect_db('raw_db')
+# primary_db=connect_db('primary_db')
+# bk_db=connect_db('backend_db')
 
 
 def get_lumped_com_id_df(f_spec_lc,df):
@@ -40,7 +40,7 @@ def get_lumped_com_id_df(f_spec_lc,df):
     Returns:
     - Dataframe containing lumped compound IDs that don't have an InChI.
     '''
-    
+    raw_db=connect_db('raw_db')
     hid = pd.read_sql('select * from rdb_hatch15',con=raw_db)
     hid = hid[hid['h_id'].notna()].reset_index(drop=True) # exclude h15 isomers
     
@@ -176,6 +176,7 @@ def merge_lumped_compound_same_formula(nmogdf):
     iddf=get_lumped_com_id_df(f_spec_multiple_lc,nmogdf)
     
     #Improting to backend_db
+    bk_db=connect_db('backend_db')
     iddf[GrpCol(iddf)[1]+['id']].to_sql(name='bkdb_nmog_MultLumCom',con=bk_db, if_exists='replace', index=False)
     
     # List of formula where the multiple compounds remain unmerged
