@@ -13,11 +13,11 @@ This section imports the necessary functions to connect to various
 databases and then initializes connections to 
 five specific databases: NEIVA_db, legacy_db, raw_db, primary_db, and backend_db.
 '''
-from NEIVA.python_scripts.connect_with_mysql import *
-legacy_db=connect_db('legacy_db')
-raw_db=connect_db('raw_db')
-primary_db=connect_db('primary_db')
-bk_db=connect_db('backend_db')
+from NEIVA.python_scripts.connect_with_mysql import connect_db, get_table_name
+# legacy_db=connect_db('legacy_db')
+# raw_db=connect_db('raw_db')
+# primary_db=connect_db('primary_db')
+# bk_db=connect_db('backend_db')
 
 
 def integrate_tables():
@@ -36,6 +36,7 @@ def integrate_tables():
     idcols=['mm','formula','compound','pollutant_category','id']
     
     #__ table names of primary database
+    primary_db = connect_db('primary_db')
     pdb_tbl_names = get_table_name('primary_db')
     
     df=pd.read_sql('select * from '+'pdb_koss18',con=primary_db)
@@ -95,6 +96,7 @@ def sort_particulate_matter_data(df):
     Note:
         The order sequence is retrieved from the 'bkdb_pm_order_seq' table in 'backend_db'.
     '''    
+    bk_db=connect_db('backend_db')
     pm_arrange_seq=pd.read_sql('select * from bkdb_pm_order_seq',con=bk_db)
     pm_arrange_seq=list(pm_arrange_seq['pollutant_category_p'])
     
@@ -127,6 +129,7 @@ def sort_nmog_data(nmogdf):
     - nmogdf_sorted: A sorted dataframe based on the above criteria.
     '''
     # Loadig the 'rdb_hatch15' dataste.
+    raw_db=connect_db('raw_db')
     hid = pd.read_sql('select * from rdb_hatch15',con=raw_db)
     hid = hid[hid['h_id'].notna()].reset_index(drop=True)
     

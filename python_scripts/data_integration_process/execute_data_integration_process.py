@@ -13,7 +13,7 @@ from NEIVA.python_scripts.data_integration_process.integrate_pdb_tables import *
 from NEIVA.python_scripts.data_integration_process.merge_lumped_com import *
 from NEIVA.python_scripts.data_integration_process.align_lumped_com_and_spec import *
 from NEIVA.python_scripts.data_integration_process.data_formatting_functions import  *
-from NEIVA.python_scripts.connect_with_mysql import *
+from NEIVA.python_scripts.connect_with_mysql import connect_db, get_table_name
 
 output_db=connect_db('neiva_output_db')
 
