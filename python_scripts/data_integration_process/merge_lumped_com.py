@@ -5,6 +5,7 @@ Created on Tue Mar  8 12:38:36 2022
 @author: Samiha Shahid
 """
 import pandas as pd
+from sqlalchemy import text
 # import numpy as np
 # import pubchempy as pcp
 from NEIVA.python_scripts.data_integration_process.data_formatting_functions import AltName,GrpCol
@@ -41,7 +42,7 @@ def get_lumped_com_id_df(f_spec_lc,df):
     - Dataframe containing lumped compound IDs that don't have an InChI.
     '''
     raw_db=connect_db('raw_db')
-    hid = pd.read_sql('select * from rdb_hatch15',con=raw_db)
+    hid = pd.read_sql(text('select * from rdb_hatch15'),con=raw_db)
     hid = hid[hid['h_id'].notna()].reset_index(drop=True) # exclude h15 isomers
     
     df=df[df['formula'].isin(f_spec_lc)].reset_index(drop=True)
@@ -200,7 +201,7 @@ def merge_lumped_compound_same_formula(nmogdf):
     
     # Load the 'bkdb_nmog_MultLumCom_slc_id_altName' which is similar to 'bkdb_nmog_MultLumCom_slc_id' 
     # but with an added 'altered_name' column. This column has modified compound names from the 'compound' column.
-    df_altName = pd.read_sql('select * from bkdb_nmog_MultLumCom_slc_id_altName', con=bk_db)
+    df_altName = pd.read_sql(text('select * from bkdb_nmog_MultLumCom_slc_id_altName'), con=bk_db)
     slc_iddf = AltName(slc_iddf, df_altName)
     
     # Transpose the EF columns so that multiple rows of a single formula become a single row.

@@ -4,6 +4,7 @@ Created on Tue Mar  8 12:07:36 2022
 """
 
 import pandas as pd
+from sqlalchemy import text
 from NEIVA.python_scripts.data_integration_process.sort_molec_formula import *
 from NEIVA.python_scripts.data_integration_process.display_pretty_table import *
 
@@ -39,7 +40,7 @@ def integrate_tables():
     primary_db = connect_db('primary_db')
     pdb_tbl_names = get_table_name('primary_db')
     
-    df=pd.read_sql('select * from '+'pdb_koss18',con=primary_db)
+    df=pd.read_sql(text('select * from '+'pdb_koss18'),con=primary_db)
     dropcol = df.columns[~df.columns.isin(idcols+df.filter(like='EF').columns.tolist()+['id'])].tolist()
     df=df.drop(columns=dropcol)    
     
@@ -54,7 +55,7 @@ def integrate_tables():
     print(tbldf['tbl_names'])
     
     for i in range(len(tbldf)):
-        data=pd.read_sql('select * from '+tbldf['tbl_names'].iloc[i],con=primary_db)
+        data=pd.read_sql(text('select * from '+tbldf['tbl_names'].iloc[i]),con=primary_db)
         data_id=data[idcols]
         data_ef=data[data.filter(like='EF').columns.tolist()+['id']]
         unmatched=data_id[~data_id['id'].isin(df['id'])]
@@ -97,7 +98,7 @@ def sort_particulate_matter_data(df):
         The order sequence is retrieved from the 'bkdb_pm_order_seq' table in 'backend_db'.
     '''    
     bk_db=connect_db('backend_db')
-    pm_arrange_seq=pd.read_sql('select * from bkdb_pm_order_seq',con=bk_db)
+    pm_arrange_seq=pd.read_sql(text('select * from bkdb_pm_order_seq'),con=bk_db)
     pm_arrange_seq=list(pm_arrange_seq['pollutant_category_p'])
     
     pmdf=pd.DataFrame()
@@ -130,7 +131,7 @@ def sort_nmog_data(nmogdf):
     '''
     # Loadig the 'rdb_hatch15' dataste.
     raw_db=connect_db('raw_db')
-    hid = pd.read_sql('select * from rdb_hatch15',con=raw_db)
+    hid = pd.read_sql(text('select * from rdb_hatch15'),con=raw_db)
     hid = hid[hid['h_id'].notna()].reset_index(drop=True)
     
     # Sorting nmogdf by molecular mass.

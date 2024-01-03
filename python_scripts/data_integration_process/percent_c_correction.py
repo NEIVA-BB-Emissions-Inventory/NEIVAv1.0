@@ -7,6 +7,7 @@ Created on Mon Jan  1 13:30:57 2024
 """
 import pandas as pd
 import numpy as np
+from sqlalchemy import text
 
 from NEIVA.python_script.connect_with_mysql import *
 legacy_db=connect_db('legacy_db')
@@ -31,7 +32,7 @@ def percent_c_correction_factor(dd, table_name):
     - DataFrame: Corrected dataset with applied correction factors.
     '''
     
-    cc=pd.read_sql('select * from bkdb_correction_factor', con=bk_db)
+    cc=pd.read_sql(text('select * from bkdb_correction_factor'), con=bk_db)
     tbl_name = list(cc['pdb_table_name'][cc['pdb_table_name'].isin([table_name])].unique())
     if len(tbl_name)==1:
         columns =list(cc['efcol'][cc['pdb_table_name']==tbl_name[0]])

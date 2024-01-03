@@ -7,6 +7,7 @@ Created on Mon Jan  1 13:36:48 2024
 """
 
 import pandas as pd
+from sqlalchemy import text
 from NEIVA.python_scripts.connect_with_mysql import connect_db
 
 # primary_db=connect_db('primary_db')
@@ -30,7 +31,7 @@ def assign_formula_type(df):
     '''
     # Loading the hatch15 from primary database.
     primary_db=connect_db('primary_db')
-    hid = pd.read_sql('select * from pdb_hatch15',con=primary_db)
+    hid = pd.read_sql(text('select * from pdb_hatch15'),con=primary_db)
     
     # Unique formula of 'df' dataframe.
     all_formula=df['formula'].unique().tolist()

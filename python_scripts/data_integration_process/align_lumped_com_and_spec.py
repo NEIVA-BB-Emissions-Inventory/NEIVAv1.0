@@ -8,6 +8,7 @@ Created on Tue Mar  8 12:41:36 2022
 import pandas as pd
 import numpy as np
 import pubchempy as pcp
+from sqlalchemy import text
 import sys
 
 from NEIVA.python_scripts.data_integration_process.data_formatting_functions import AltName,GrpCol
@@ -104,7 +105,7 @@ def sync_lumped_compound_and_speciation(nmogdf):
     lcdf[GrpCol(lcdf)[1]+['id']].to_sql(name='bkdb_nmog_LumpedCom',if_exists='replace',con=bk_db,index=False)
     
     # Get altered names to improve search accuracy in PubChem
-    df_altName=pd.read_sql('select * from bkdb_nmog_LumpCom_altName',con=bk_db)
+    df_altName=pd.read_sql(text('select * from bkdb_nmog_LumpCom_altName'),con=bk_db)
     lcdf=AltName(lcdf,df_altName)
     
    # Remove general terms from compound names

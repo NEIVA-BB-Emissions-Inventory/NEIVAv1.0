@@ -6,6 +6,7 @@ Created on Sat Feb 26 19:32:34 2022
 """
 import pandas as pd
 import numpy as np
+from sqlalchemy import text
 
 from NEIVA.python_scripts.connect_with_mysql import connect_db, get_table_name
 # primary_db=connect_db('primary_db')
@@ -39,7 +40,7 @@ def Get_molec_formula():
     
     ss=''
     for tbl in pdb_tbl_names:
-        data=pd.read_sql('select * from '+tbl,con=primary_db)
+        data=pd.read_sql(text('select * from '+tbl),con=primary_db)
         if 'formula' in data.columns:
             data=data[data['formula'].notna()]
             data=data[~data['id'].isin(['NOx_as_NO'])] #excluding NOx_as_NO row
