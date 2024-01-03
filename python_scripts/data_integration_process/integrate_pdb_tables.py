@@ -103,9 +103,9 @@ def sort_particulate_matter_data(df):
     pm_arrange_seq=list(pm_arrange_seq['pollutant_category_p'])
     
     pmdf=pd.DataFrame()
-    for i in pm_arrange_seq:
+    for pm_type in pm_arrange_seq:
         # pmdf=pmdf.append(df[df['pollutant_category']==i])
-        pmdf = pd.concat([pmdf,df[df['pollutant_category']==i]], ignore_index=True)
+        pmdf = pd.concat([pmdf,df[df['pollutant_category']==pm_type]], ignore_index=True)
     
     return pmdf
 
