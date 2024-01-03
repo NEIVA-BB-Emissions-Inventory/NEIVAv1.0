@@ -56,8 +56,8 @@ def get_table_name(database_name):
     
     table_name=[]
     for tbl in tables:
-        table_name = pd.concat([table_name,tbl[0]], ignore_index=True)
-        # table_name.append(tbl[0])
+        # table_name = pd.concat([table_name,tbl[0]], ignore_index=True)
+        table_name.append(tbl[0])
     
     # Close the cursor and connection
     cursor.close()
