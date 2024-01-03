@@ -36,14 +36,15 @@ def get_table_name(database_name):
         Cursor object for executing queries in the database.
     '''    
     # Define your connection parameters
-    config = {
-        'user': 'root',
-        'password': 'Samiha_056',
-        'host': 'localhost',  # adjust if your MySQL server isn't on localhost
-        'database': database_name,
-    }
+    # config = {
+    #     'user': 'root',
+    #     'password': 'Samiha_056',
+    #     'host': 'localhost',  # adjust if your MySQL server isn't on localhost
+    #     'database': database_name,
+    # }
     # Establish the connection
-    conn = mysql.connector.connect(**config)
+    conn = connect_db(database_name)
+    # conn = mysql.connector.connect(**config)
     
     # Create a cursor object using the connection
     cursor = conn.cursor()
