@@ -6,6 +6,7 @@ Created on Tue Mar  8 12:38:36 2022
 """
 import pandas as pd
 from sqlalchemy import text
+from sqlalchemy import create_engine
 # import numpy as np
 # import pubchempy as pcp
 from NEIVA.python_scripts.data_integration_process.data_formatting_functions import AltName,GrpCol
@@ -177,8 +178,8 @@ def merge_lumped_compound_same_formula(nmogdf):
     iddf=get_lumped_com_id_df(f_spec_multiple_lc,nmogdf)
     
     #Improting to backend_db
-    bk_db=connect_db('backend_db')
-    iddf[GrpCol(iddf)[1]+['id']].to_sql(name='bkdb_nmog_MultLumCom',con=bk_db, if_exists='replace', index=False)
+    engine = create_engine("mysql+pymysql://root:root@localhost/"+'backend_db')
+    iddf[GrpCol(iddf)[1]+['id']].to_sql(name='bkdb_nmog_MultLumCom',con=engine, if_exists='replace', index=False)
     
     # List of formula where the multiple compounds remain unmerged
     slcdf=['C4H6'] 
@@ -197,10 +198,11 @@ def merge_lumped_compound_same_formula(nmogdf):
     slc_iddf=slc_iddf[GrpCol(slc_iddf)[1]+['id']] 
     
     # Save the 'slc_iddf' to backend_db for user review. 
-    slc_iddf.to_sql(name='bkdb_nmog_MultLumCom_slc_id',con=bk_db, if_exists='replace',index=False) 
+    slc_iddf.to_sql(name='bkdb_nmog_MultLumCom_slc_id',con=engine, if_exists='replace',index=False) 
     
     # Load the 'bkdb_nmog_MultLumCom_slc_id_altName' which is similar to 'bkdb_nmog_MultLumCom_slc_id' 
     # but with an added 'altered_name' column. This column has modified compound names from the 'compound' column.
+    bk_db=connect_db('backend_db')
     df_altName = pd.read_sql(text('select * from bkdb_nmog_MultLumCom_slc_id_altName'), con=bk_db)
     slc_iddf = AltName(slc_iddf, df_altName)
     

@@ -8,6 +8,7 @@ Created on Tue Mar  8 12:41:36 2022
 import pandas as pd
 import pubchempy as pcp
 from sqlalchemy import text
+from sqlalchemy import create_engine
 import sys
 
 from NEIVA.python_scripts.data_integration_process.data_formatting_functions import AltName,GrpCol
@@ -100,10 +101,11 @@ def sync_lumped_compound_and_speciation(nmogdf):
     lcdf=nmogdf[nmogdf['compound'].isin(com)].reset_index(drop=True) 
     
     # Save to backend db for manual inspection
-    bk_db=connect_db('backend_db')
-    lcdf[GrpCol(lcdf)[1]+['id']].to_sql(name='bkdb_nmog_LumpedCom',if_exists='replace',con=bk_db,index=False)
+    engine = create_engine("mysql+pymysql://root:root@localhost/"+'backend_db')
+    lcdf[GrpCol(lcdf)[1]+['id']].to_sql(name='bkdb_nmog_LumpedCom',if_exists='replace',con=engine,index=False)
     
     # Get altered names to improve search accuracy in PubChem
+    bk_db=connect_db('backend_db')
     df_altName=pd.read_sql(text('select * from bkdb_nmog_LumpCom_altName'),con=bk_db)
     lcdf=AltName(lcdf,df_altName)
     
@@ -132,9 +134,9 @@ def import_fc_dataset(nmogdf,lc_spec_df):
     None. The function performs in-place modifications and exports results to the database.
     '''    
     # Construct specific fractional contribution dataset with aligned lumped compounds and speciation.
-    bk_db=connect_db('backend_db')
+    engine = create_engine("mysql+pymysql://root:root@localhost/"+'backend_db')
     specific_fc_df=lc_spec_df[GrpCol(lc_spec_df)[1]+['id','study']]
-    specific_fc_df.to_sql(name='bkdb_fc_calc_specific', con=bk_db, if_exists='replace', index=False)
+    specific_fc_df.to_sql(name='bkdb_fc_calc_specific', con=engine, if_exists='replace', index=False)
     
     # Extract simple fractional contribution dataset with only one lumped compound per formula.
     simple_fc=nmogdf[nmogdf['formula'].isin(GrpFormula(nmogdf)[3])]
@@ -143,7 +145,7 @@ def import_fc_dataset(nmogdf,lc_spec_df):
     
     # Rearrange columns and export to backend database.
     simple_fc=simple_fc[GrpCol(simple_fc)[1]+['id','study']]
-    simple_fc.to_sql(name='bkdb_fc_calc_simple',con=bk_db, if_exists='replace', index=False)
+    simple_fc.to_sql(name='bkdb_fc_calc_simple',con=engine, if_exists='replace', index=False)
     print('Imported fractional contribution datasets to Backend database-')
     return
 
