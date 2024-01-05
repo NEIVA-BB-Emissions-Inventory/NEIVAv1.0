@@ -50,7 +50,7 @@ avgdf = calculate_average_fire_types(intdf_3, efcoldf)
 avgdf = round_avg_cols(avgdf)
 
 # Calculate fractional contributions in the average dataset.
-avgdf=fc_calc(avgdf)  
+avgdf=calculalate_fractional_contribution(avgdf)  
 
 # Rearrange columns in the final dataset.
 #avgdf=rearrange_col_finaldf(avgdf)
