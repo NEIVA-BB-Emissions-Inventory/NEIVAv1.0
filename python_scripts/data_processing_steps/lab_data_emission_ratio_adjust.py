@@ -51,7 +51,7 @@ def calculate_average_lab_study(intdf,efcoldf):
                 df['study']=[study]
                 df['measurement_type']=['lab']                       
                 efcoldf=efcoldf[~efcoldf['efcol'].isin(efcols)]
-                efcoldf=efcoldf.append(df)
+                efcoldf = pd.concat([efcoldf, df], ignore_index=True)
                 efcoldf=efcoldf.reset_index(drop=True)
     return intdf, efcoldf
 
