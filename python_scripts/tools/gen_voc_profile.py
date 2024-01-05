@@ -57,7 +57,7 @@ def voc_profile(dd, chem, ft):
     nmog=nmog[nmog['ef'].notna()].reset_index(drop=True)
 
     # Load Lumped Compounds with Speciation dataset.
-    lc_spec_ref= pd.read_sql(text,('select * from chem_property_lumpCom_spec'), con=bk_db)
+    lc_spec_ref= pd.read_sql(text('select * from chem_property_lumpCom_spec'), con=bk_db)
     # Get the Lumped compound id which is id's without an InChI
     lc_spec_ref_id=list(lc_spec_ref['id'][~lc_spec_ref['id'].str.contains('InChI')])
     # Get the dataframe where lumped compound ids of 'chem_property_lumpCom_spec' is in 'nmogdf'
