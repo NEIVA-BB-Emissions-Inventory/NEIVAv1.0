@@ -8,6 +8,7 @@ Created on Mon Aug  7 11:52:54 2023
 
 import pandas as pd
 from NEIVA.python_scripts.connect_with_mysql import connect_db
+from sqlalchemy import text
 
 def sort_by_fire_type_year(data):
     sorting_list=['savanna', 'boreal forest','tropical forest', 'temperate forest',

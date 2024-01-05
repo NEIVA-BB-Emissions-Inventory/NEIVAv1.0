@@ -7,7 +7,7 @@ Created on Sat Feb 11 14:20:03 2023
 """
 
 # import pandas as pd
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 import mysql.connector
 import pandas as pd
 

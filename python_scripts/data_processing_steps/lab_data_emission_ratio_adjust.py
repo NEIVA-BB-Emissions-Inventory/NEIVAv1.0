@@ -5,10 +5,9 @@ Created on Tue Mar  8 19:58:18 2022
 
 @author: samiha
 """
-
-
 import pandas as pd
 import numpy as np
+from sqlalchemy import text
 
 from NEIVA.python_scripts.data_processing_steps.data_calculations import get_ind
 from NEIVA.python_scripts.data_processing_steps.info_table_sorting_functions import sort_by_fire_type_year

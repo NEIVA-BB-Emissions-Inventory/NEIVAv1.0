@@ -7,6 +7,8 @@ Created on Tue Mar  8 19:58:10 2022
 
 import pandas as pd
 import numpy as np
+from sqlalchemy import text
+
 
 from NEIVA.python_scripts.data_integration_process.data_formatting_functions import GrpCol
 

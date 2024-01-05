@@ -7,6 +7,7 @@ Created on Tue Mar  8 20:02:38 2022
 """
 import pandas as pd
 import numpy as np
+from sqlalchemy import text
 
 from NEIVA.python_scripts.data_integration_process.data_formatting_functions import GrpCol
 from NEIVA.python_scripts.data_integration_process.categorize_chemical_formula import assign_formula_type
