@@ -42,7 +42,7 @@ def voc_profile(dd, chem, ft):
     # assert len(nmog[['mm','formula','compound','id']][~nmog['id'].isin(id_all)])==0
     
     # Final chem_property datasets
-    tt_f=tt.append(tt1).append(tt2)
+    tt_f = pd.concat([tt, tt1, tt2], ignore_index=True)
     tt_f=tt_f.reset_index(drop=True)
     tt_f=tt_f[['id','S07','S18B','S07T','MOZT1','S22']]
     
@@ -57,7 +57,7 @@ def voc_profile(dd, chem, ft):
     nmog=nmog[nmog['ef'].notna()].reset_index(drop=True)
 
     # Load Lumped Compounds with Speciation dataset.
-    lc_spec_ref= pd.read_sql('select * from chem_property_lumpCom_spec', con=bk_db)
+    lc_spec_ref= pd.read_sql(text,('select * from chem_property_lumpCom_spec'), con=bk_db)
     # Get the Lumped compound id which is id's without an InChI
     lc_spec_ref_id=list(lc_spec_ref['id'][~lc_spec_ref['id'].str.contains('InChI')])
     # Get the dataframe where lumped compound ids of 'chem_property_lumpCom_spec' is in 'nmogdf'
@@ -89,12 +89,11 @@ def voc_profile(dd, chem, ft):
             # Equally dividing the EF over the number of specie
             df.loc[k,'ef']=lc_spec_df['ef'].iloc[i]/len(ll)
             df.loc[k,'mm']=ll['mm'][k]
-        df_final=df_final.append(df)
+        df_final = pd.concat([df_final, df], ignore_index=True)
         df_final=df_final.reset_index(drop=True)
     # Adding the two datasets        
-    nmog_final=nmog_final.append(df_final)        
+    nmog_final = pd.concat([nmog_final, df_final], ignore_index=True)        
     nmog_final = nmog_final.reset_index(drop=True)
-    
     #___
     # The list of unique model species
     uu=list(nmog_final[chem][nmog_final[chem].notna()].unique())
