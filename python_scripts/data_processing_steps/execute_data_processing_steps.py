@@ -7,14 +7,15 @@ Created on Sun Mar  6 19:24:21 2022
 """
 import pandas as pd
 
-from utils_calc import calc_NOx_as_NO
-from ER_ADJ_calc import * 
-from AVG_n_FC_calc import assign_n_cols,get_avg_df,fc_calc, round_avg_cols
-from utils import GrpCol, rearrange_col_finaldf
-from utils_sort import assign_year_col_efcoldf, assign_legend_col
+from NEIVA.python_scripts.data_processing_steps.data_calculations import *
+from NEIVA.python_scripts.data_processing_steps.lab_data_emission_ratio_adjust import * 
+from NEIVA.python_scripts.data_processing_steps.assign_fractional_contribution import *
+from NEIVA.python_scripts.data_integration_process.data_formatting_functions import  GrpCol, rearrange_col_finaldf
+
+from NEIVA.python_scripts.data_processing_steps.info_table_sorting_functions import assign_year_col_efcoldf, assign_legend_col
 
 # Connect to MySQL database
-from connect_with_mysql import connect_db
+from NEIVA.python_scripts.connect_with_mysql import connect_db
 output_db=connect_db('neiva_output_db')
 bk_db=connect_db('backend_db')
 
@@ -28,7 +29,7 @@ intdf=pd.read_sql('select * from Integrated_EF', con=output_db)
 intdf=calc_NOx_as_NO (intdf)
 
 # Calculate lab study and update EF column information table.
-intdf_2, efcoldf = get_lab_study_avg(intdf, efcoldf)
+intdf_2, efcoldf = calculate_average_lab_study(intdf, efcoldf)
 
 # Check the statement to ensure data consistency.
 assert len(intdf_2.columns[intdf_2.columns.str.contains('EF')])== len(efcoldf)
@@ -38,13 +39,13 @@ efcoldf = assign_year_col_efcoldf(efcoldf)
 efcoldf = assign_legend_col(efcoldf)
 
 # Perform emission ratio adjustment calculations on the integrated dataset.
-intdf_3=er_adj(intdf_2,efcoldf)[0]
+intdf_3=lab_data_adjust_to_field_conditions(intdf_2,efcoldf)[0]
 
 # Assign 'N' columns to the integrated dataset based on EF column information.
-intdf_3=assign_n_cols(intdf_3,efcoldf)
+intdf_3=assign_data_count_column(intdf_3,efcoldf)
 
 # Calculate average values for the integrated dataset.
-avgdf = get_avg_df(intdf_3, efcoldf)
+avgdf = calculate_average_fire_types(intdf_3, efcoldf)
 # Round average columns to four decimal places.
 avgdf = round_avg_cols(avgdf)
 

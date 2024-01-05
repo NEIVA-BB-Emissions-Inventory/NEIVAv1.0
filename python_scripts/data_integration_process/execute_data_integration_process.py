@@ -51,8 +51,7 @@ import_fc_dataset(nmogdf,lc_spec_df)
 # Sorts and merges inorganic gases, particulate matter data with nmogdf
 igdf=sort_inorganic_gas_data(int_df)
 pmdf=sort_particulate_matter_data(int_df)
-mdf=igdf.append(nmogdf).append(pmdf)
-
+mdf = pd.concat([igdf, nmogdf, pmdf], ignore_index=True)
 # Storing the final integrated dataset in the database 
 mdf=mdf.reset_index(drop=True)
 
