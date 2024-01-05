@@ -191,7 +191,7 @@ def lab_data_adjust_to_field_conditions (df,efcoldf):
             co_cor[l+'_ER_ADJ']=round(co_cor * fieldavg.iloc[co_ind],4)
             
             cor=pd.DataFrame()
-            cor = pd.concat([co2_cor[new_col], co_cor[new_col]], ignore_index=True, axis=0)
+            cor[new_col]=co2_cor[new_col].append(co_cor[new_col])
             
             df=df.merge(cor, right_index=True, left_index=True, how='left')
           
