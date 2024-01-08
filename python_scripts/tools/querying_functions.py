@@ -17,7 +17,8 @@ from sqlalchemy import text
 # This function returns the PM2.5, OC, BC data for a specified fire type and table name. The table name inlcudes three different tables
 # integrated ef, processed ef, recommended ef.
 def select_pm_data (ft, table_name):
-
+    bk_db=connect_db('backend_db')
+    output_db=connect_db('neiva_output_db')
     if table_name=='integrated ef':
         efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
         df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
@@ -66,6 +67,9 @@ def select_ef_pollutant_category(ft, pc):
 
 # This function returns the EF of specified compound name and table name (integrated ef, processed ef and recommended ef)
 def select_compound(ft, com_name,table_name):
+    bk_db=connect_db('backend_db')
+    output_db=connect_db('neiva_output_db')
+
     if table_name=='integrated ef':
         df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
         efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
@@ -92,11 +96,17 @@ def select_compound(ft, com_name,table_name):
  # This funtion returns the model surrogates of a specified chemical mechanism
  # S07, S07T, S18B, S22, MOZT1
 def model_surrogates(chem):
-  pp=pd.read_sql(text('select * from Property_Surrogate'), con=output_db)
-  return pp[chem].unique()
+   bk_db=connect_db('backend_db')
+   output_db=connect_db('neiva_output_db')
+
+   pp=pd.read_sql(text('select * from Property_Surrogate'), con=output_db)
+   return pp[chem].unique()
 
 # This function returns the speciation compounds of specified chemical mechanism and model surrogate
 def speciation_profile(ft,chem,spc):
+  bk_db=connect_db('backend_db')
+  output_db=connect_db('neiva_output_db')
+    
   pp=pd.read_sql(text('select * from Property_Surrogate'), con=output_db)
   df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
   df=df.merge(pp[pp.columns[3:]],on='id', how='left')
@@ -105,6 +115,9 @@ def speciation_profile(ft,chem,spc):
 
 # Plots ef data of a specified fire type and table name
 def plot_ef(compound,ft, table_name):
+  bk_db=connect_db('backend_db')
+  output_db=connect_db('neiva_output_db')
+    
   if table_name=='processed ef':
     df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
     efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
