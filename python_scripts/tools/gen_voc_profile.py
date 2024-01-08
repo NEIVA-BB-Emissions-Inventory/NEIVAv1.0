@@ -131,3 +131,13 @@ def voc_profile(dd, chem, ft):
 
     return prdf
 
+
+def plot_voc_profile(pp):
+    
+    x=np.arange(len(pp))
+    plt.barplot(x, pp['mole_fraction'])
+    plt.xticks()
+    
+    
+    return
+

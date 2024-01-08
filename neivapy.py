@@ -19,5 +19,5 @@ from NEIVA.python_scripts.data_processing_steps.lab_data_emission_ratio_adjust i
 from NEIVA.python_scripts.data_processing_steps.info_table_sorting_functions import *
 
 from NEIVA.python_scripts.tools.gen_voc_profile import *
-
+from NEIVA.python_scripts.tools.querying_functions import *
 
