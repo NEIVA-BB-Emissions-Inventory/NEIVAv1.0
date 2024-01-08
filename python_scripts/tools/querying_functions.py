@@ -51,12 +51,18 @@ def select_pm_data (ft, table_name):
 
 # This function returns the list of pollutant category of recommended ef dataset.
 def display_pollutant_category():
+    bk_db=connect_db('backend_db')
+    output_db=connect_db('neiva_output_db')
+    
     rdf=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
     ll=rdf['pollutant_category'].unique()
     return list(ll)
 
 # This function returns the EF of specified pollutant category and fire type.
 def select_ef_pollutant_category(ft, pc):
+    bk_db=connect_db('backend_db')
+    output_db=connect_db('neiva_output_db')
+    
     efcol='AVG_'+ft.replace(' ','_')
     rdf=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
 
