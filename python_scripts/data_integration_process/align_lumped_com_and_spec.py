@@ -56,10 +56,10 @@ def add_Spec2lumCom(lcdf,nmogdf):
     - DataFrame: Speciation dataframe of lumped compounds.
     """  
     print('***************************************************************************************')
-    print('The following steps are executed:')
+    print('This is a data sorting step. The following steps are executed:')
     print('1. Split a lumped compound into individual components, assign id to the componenets')
     print('2. Search the ids within the integrated dataset')
-    print('3. Align the lumped compound and speciatied compounds if found.')
+    print('3. Align the lumped compound and individual compounds if found.')
     print('***************************************************************************************')
  
     lc_spec_df=pd.DataFrame()
@@ -73,9 +73,9 @@ def add_Spec2lumCom(lcdf,nmogdf):
             try:
                 c=pcp.get_compounds(k.strip(),'name')
                 llid.append(c[0].inchi)
-                print('Assigned id: ', k.strip())
+                print('Assigned id to individual compound: ', k.strip())
             except:
-                print('Unable to assign id: ', k.strip())
+                print('Unable to assign id to inidividual compound: ', k.strip())
         specdf=nmogdf[nmogdf['id'].isin(llid)]
         if len(specdf)==len(ll):
             print('All individual ids are found in the Integrated Dataset')
