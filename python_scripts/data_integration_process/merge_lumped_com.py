@@ -156,6 +156,33 @@ def check_r_iddf (iddf, r_iddf):
         print('Rows merging process is verified.')
         return 'Clear'
                                 
+def alter_name_slc_iddf (slc_iddf):
+    
+    com_name = ['Methyl Cyclopentadiene ( isomer 1, C6H8)',
+                 'Other C6H10 (isomer_1)',
+                 'Hexenes (sum of 3 isomers)',
+                 'assorted amides',
+                 '2+3-methylpentane',
+                 'assorted amines',
+                 'assorted hcs',
+                 'undaturated C6 cyclic carboxylic acid',
+                 'terpenes(-pinene)']
+    
+    altered_name = ['Methyl Cyclopentadiene isomers',
+                     'C6H10 isomers',
+                     'Hexenes+C6H12 isomers',
+                     'C4H9NO amides',
+                     '2-methylpentane+3-methylpentane',
+                     'C4H11NO amines',
+                     'C7H12 isomers',
+                     'unsaturated C6 cyclic carboxylic acid',
+                     'Monoterpenes']
+    
+    for i in range(len(com_name)):
+        ind=slc_iddf[slc_iddf['compound']==com_name[i]].index[0]
+        slc_iddf.loc[ind,'compound']=altered_name[i]
+    
+    return slc_iddf
 
 
 def merge_lumped_compound_same_formula(nmogdf):
@@ -201,11 +228,8 @@ def merge_lumped_compound_same_formula(nmogdf):
     # Save the 'slc_iddf' to backend_db for user review. 
     slc_iddf.to_sql(name='bkdb_nmog_MultLumCom_slc_id',con=engine, if_exists='replace',index=False) 
     
-    # Load the 'bkdb_nmog_MultLumCom_slc_id_altName' which is similar to 'bkdb_nmog_MultLumCom_slc_id' 
-    # but with an added 'altered_name' column. This column has modified compound names from the 'compound' column.
-    bk_db=connect_db('backend_db')
-    df_altName = pd.read_sql(text('select * from bkdb_nmog_MultLumCom_slc_id_altName'), con=bk_db)
-    slc_iddf = AltName(slc_iddf, df_altName)
+    # Changing compound names
+    slc_iddf=alter_name_slc_iddf (slc_iddf)
     
     # Transpose the EF columns so that multiple rows of a single formula become a single row.
     iddf_ef=merge_rows(iddf) 

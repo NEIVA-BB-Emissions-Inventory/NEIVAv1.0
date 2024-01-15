@@ -30,7 +30,7 @@ The final, integrated dataset is saved as IntData in the output_db.
 int_df=integrate_tables()
 
 # Extracts dataframe where pollutant_category is NMOC_g 
-nmogdf=fetch_nmog(int_df)   
+nmogdf=select_nmog(int_df)   
 nmogdf=assign_study_column(nmogdf)
 
 # Processes and manages record with multiple lumped compounds.

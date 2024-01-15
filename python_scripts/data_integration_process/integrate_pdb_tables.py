@@ -109,7 +109,7 @@ def sort_particulate_matter_data(df):
     
     return pmdf
 
-def fetch_nmog(df):
+def select_nmog(df):
     nmogdf=df[df['pollutant_category']=='NMOC_g']
     nmogdf=nmogdf.sort_values(by=['mm','formula','id']).reset_index(drop=True)
     print('Non-Methane Organic Compounds Gas-Phase (NMOC_g) Data Frame: [ROW, COLUMN] ='+ '['+str(len(nmogdf))+' '+str(len(nmogdf.columns))+']' )
