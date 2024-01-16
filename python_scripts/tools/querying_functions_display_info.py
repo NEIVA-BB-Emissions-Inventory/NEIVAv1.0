@@ -20,12 +20,17 @@ def table_info (database, fire_type):
     dd=pd.read_sql(text('select * from bkdb_info_table_name'), con=bk_db)
     dd_final=dd[dd['db']==database].reset_index(drop=True)
     dd_final=dd_final[dd_final['fire_type'].str.contains(fire_type)]
-    return dd_final[['tbl_name','measueremnt_type','fire_type','study','source','doi']]
+    return dd_final[['tbl_name','measurement_type','fire_type','study','source','doi']]
     
 def summary_table (fire_type, measurement_type):
     bk_db=connect_db('backend_db')
     dd=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
-    dd[dd['fire_type']==fire_type].reset_index(drop=True)
+    dd=dd[dd['fire_type']==fire_type].reset_index(drop=True)
+    if measurement_type=='all':
+        dd=dd
+    else:
+        dd=dd[dd['measurement_type']==measurement_type].reset_index(drop=True)
+        
     if fire_type!='cookstove':
         return dd[['efcol','measurement_type','MCE','fuel_type','cookstove_name','cookstove_type','study']]
     else:
