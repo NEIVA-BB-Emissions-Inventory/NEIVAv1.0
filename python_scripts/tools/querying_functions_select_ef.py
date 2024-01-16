@@ -49,14 +49,6 @@ def select_pm_data (ft, table_name):
         iid=['PM<2.5','OC','BC','OA']
         return df[['compound',efcol]][df['id'].isin(iid)].reset_index(drop=True)
 
-# This function returns the list of pollutant category of recommended ef dataset.
-def display_pollutant_category():
-    bk_db=connect_db('backend_db')
-    output_db=connect_db('neiva_output_db')
-    
-    rdf=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
-    ll=rdf['pollutant_category'].unique()
-    return list(ll)
 
 # This function returns the EF of specified pollutant category and fire type.
 def select_ef_pollutant_category(ft, pc):
@@ -99,14 +91,6 @@ def select_compound(ft, com_name,table_name):
     ll=ll.reset_index(drop=True)
     return ll
 
- # This funtion returns the model surrogates of a specified chemical mechanism
- # S07, S07T, S18B, S22, MOZT1
-def model_surrogates(chem):
-   bk_db=connect_db('backend_db')
-   output_db=connect_db('neiva_output_db')
-
-   pp=pd.read_sql(text('select * from Property_Surrogate'), con=output_db)
-   return pp[chem].unique()
 
 # This function returns the speciation compounds of specified chemical mechanism and model surrogate
 def speciation_profile(ft,chem,spc):
