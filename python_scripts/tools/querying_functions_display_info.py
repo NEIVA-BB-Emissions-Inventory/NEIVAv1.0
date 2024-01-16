@@ -18,8 +18,8 @@ from sqlalchemy import text
 def table_info (database):
     bk_db=connect_db('backend_db')
     dd=pd.read_sql(text('select * from bkdb_info_table_name'), con=bk_db)
-    dd=dd[dd['db']==database].reset_index
-    return dd[['tbl_name','fire_type','study','source','doi']]
+    dd_final=dd[dd['db']==database].reset_index(drop=True)
+    return dd_final[['tbl_name','fire_type','study','source','doi']]
     
 def summary_table (fire_type):
     bk_db=connect_db('backend_db')
