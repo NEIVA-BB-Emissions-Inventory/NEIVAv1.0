@@ -53,13 +53,5 @@ def model_surrogates(chem):
    return list(pp[chem].unique())
 
 
-ll=list(df[df['fire_type']=='multiple fire type'].index)
-
-for i in range(len(ll)):
-    ss=df['study'].iloc[ll[i]]
-    df.loc[ll[i],'fire_type']=';'.join(df2['fire_type'][df2['study']==ss].unique())
-    
-
-
 
 
