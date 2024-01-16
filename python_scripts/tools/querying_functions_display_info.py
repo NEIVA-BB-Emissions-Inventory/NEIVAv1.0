@@ -15,10 +15,11 @@ from sqlalchemy import text
 
 
 
-def table_info (database):
+def table_info (database, fire_type):
     bk_db=connect_db('backend_db')
     dd=pd.read_sql(text('select * from bkdb_info_table_name'), con=bk_db)
     dd_final=dd[dd['db']==database].reset_index(drop=True)
+    dd_final=dd_final[dd_final['fire_type'].str.contains(fire_type)]
     return dd_final[['tbl_name','fire_type','study','source','doi']]
     
 def summary_table (fire_type):
@@ -49,6 +50,16 @@ def model_surrogates(chem):
    output_db=connect_db('neiva_output_db')
 
    pp=pd.read_sql(text('select * from Property_Surrogate'), con=output_db)
-   return pp[chem].unique()
+   return list(pp[chem].unique())
+
+
+ll=list(df[df['fire_type']=='multiple fire type'].index)
+
+for i in range(len(ll)):
+    ss=df['study'].iloc[ll[i]]
+    df.loc[ll[i],'fire_type']=';'.join(df2['fire_type'][df2['study']==ss].unique())
+    
+
+
 
 
