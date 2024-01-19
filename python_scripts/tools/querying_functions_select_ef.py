@@ -12,6 +12,7 @@ import pubchempy as pcp
 import matplotlib.pyplot as plt
 from NEIVA.python_scripts.connect_with_mysql import*
 from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
+from NEIVA.python_scripts.data_integration_process.sort_molec_formula import *
 
 from sqlalchemy import text
 
@@ -207,11 +208,17 @@ def sum_ef_model_surrogate (chem, ft, model_surrogate):
     nmog_final=nmog[~nmog['id'].isin(lc_spec_df['id'])]
     nmog_final=nmog_final.reset_index(drop=True)
     
+    #__ nC for assigning conversion factor ______
+    for i in range(len(nmog_final)):
+         nmog_final.loc[i,'nC']=get_nMolecule('C',nmog_final['formula'].iloc[i])
+    
     # Process the 'TERP' if chem is MOZART
     if chem=='MOZT1':
         terp_unassigned=nmog_final['ef'][nmog_final['S07']=='TERP'][nmog_final['MOZT1'].isnull()].sum()
     
-    nmog_final=nmog_final[[chem,'ef','mm']]            
+    nmog_final=nmog_final[[chem,'ef','mm','nC']]
+    nmog_final['conversion_factor']= (nmog_final['nC']*12)/nmog_final['mm']
+    nmog_final['ef']=nmog_final['ef']*nmog_final['conversion_factor']
     #__
     df_final=pd.DataFrame() # The dataframe where the assignments of lumped compound from speceation will be assigned.
     # iterate over 'lc_spec_df' dataframe
