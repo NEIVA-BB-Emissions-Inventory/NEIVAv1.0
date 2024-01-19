@@ -11,6 +11,8 @@ import numpy as np
 import pubchempy as pcp
 import matplotlib.pyplot as plt
 from NEIVA.python_scripts.connect_with_mysql import*
+from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
+
 from sqlalchemy import text
 
 
