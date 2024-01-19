@@ -91,6 +91,18 @@ def select_compound(ft, com_name,table_name):
     ll=ll.reset_index(drop=True)
     return ll
 
+def select_compound_rdf (ft, com_name):
+    output_db=connect_db('neiva_output_db')
+    df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+    
+    aa=pcp.get_compounds(com_name, 'name')[0].inchi
+    ind=df[df['id']==aa].index[0]
+    
+    col='AVG_'+ft.replace(' ','_')
+    
+    return df[['mm','formula','compound',col]].iloc[ind]
+
+
 
 # This function returns the speciation compounds of specified chemical mechanism and model surrogate
 def speciation_profile(ft,chem,spc):
