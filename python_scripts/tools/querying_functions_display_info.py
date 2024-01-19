@@ -56,7 +56,3 @@ def model_surrogates(chem):
 
    pp=pd.read_sql(text('select * from Property_Surrogate'), con=output_db)
    return list(pp[chem].unique())
-
-
-
-
