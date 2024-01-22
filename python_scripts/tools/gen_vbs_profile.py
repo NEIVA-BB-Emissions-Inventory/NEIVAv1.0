@@ -8,43 +8,44 @@ Created on Wed Oct 18 19:30:13 2023
 import pubchempy as pcp
 import pandas as pd
 import numpy as np
-from connect_with_mysql import*
-
+from NEIVA.python_scripts.connect_with_mysql import*
+from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
+from sqlalchemy import text
 import matplotlib.pyplot as plt
-output_db=connect_db('neiva_output_db')
-bk_db=connect_db('backend_db')
-
-# Loading Recommended_EF data, extracting NMOG_C and excluding 
-dd=pd.read_sql('select * from Recommended_EF', con=output_db)
-nmog=dd[dd['pollutant_category']=='NMOC_g']
-
-#__
-unk1=nmog[nmog['compound'].str.contains('unk')]
-unk2=nmog[nmog['compound'].str.contains('Unk')]
 
 
-# Compounds with 'unknown' (unknown chemical structure)
-nmog=nmog[~nmog['compound'].str.contains('unk')]
-nmog=nmog[~nmog['compound'].str.contains('Unk')]
-nmog=nmog.reset_index(drop=True)
-
-# Loading dataset with chemmical mechanism and property assignments
-tt=pd.read_sql('select * from chem_property_inchi', con=bk_db)
-tt1=pd.read_sql('select * from chem_property_h15isomers', con=bk_db)
-tt2=pd.read_sql('select * from chem_property_lumpCom', con=bk_db)
-
-#__
-tt2['cstar']=tt2[['cstar','cstar1','cstar2']].T.mean()
-#__
-
-# Final chem_property datasets
-tt_f=tt.append(tt1).append(tt2)
-tt_f=tt_f.reset_index(drop=True)
-tt_f=tt_f[['id','S07','S18B','S07T','MOZT1','S22', 'cstar']]
-
-nmog=nmog.merge(tt_f, on='id', how='left')
-
-def calc_VBS (nmog, ft, unk1, unk2):
+def calc_VBS (dd, ft):
+    output_db=connect_db('neiva_output_db')
+    bk_db=connect_db('backend_db')
+    
+    nmog=dd[dd['pollutant_category']=='NMOC_g']
+    
+    #__
+    unk1=nmog[nmog['compound'].str.contains('unk')]
+    unk2=nmog[nmog['compound'].str.contains('Unk')]
+    
+    # Compounds with 'unknown' (unknown chemical structure)
+    nmog=nmog[~nmog['compound'].str.contains('unk')]
+    nmog=nmog[~nmog['compound'].str.contains('Unk')]
+    nmog=nmog.reset_index(drop=True)
+    
+    # Loading dataset with chemmical mechanism and property assignments
+    tt=pd.read_sql(text('select * from chem_property_inchi'), con=bk_db)
+    tt1=pd.read_sql(text('select * from chem_property_h15isomers'), con=bk_db)
+    tt2=pd.read_sql(text('select * from chem_property_lumpCom'), con=bk_db)
+    
+    #__
+    tt2['cstar']=tt2[['cstar','cstar1','cstar2']].T.mean()
+    #__
+    
+    # Final chem_property datasets
+    tt_f=tt.append(tt1).append(tt2)
+    tt_f=tt_f.reset_index(drop=True)
+    tt_f=tt_f[['id','S07','S18B','S07T','MOZT1','S22', 'cstar']]
+    
+    nmog=nmog.merge(tt_f, on='id', how='left')
+    nmog=mozart_species(nmog)
+    
     ft=ft.replace(' ','_')
     efcol='AVG_'+ft
     nmog['ef']=nmog[efcol]
@@ -52,7 +53,7 @@ def calc_VBS (nmog, ft, unk1, unk2):
     nmog=nmog[nmog['ef'].notna()].reset_index(drop=True)
     
     # Load Lumped Compounds with Speciation dataset.
-    lc_spec_ref= pd.read_sql('select * from chem_property_lumpCom_spec', con=bk_db)
+    lc_spec_ref= pd.read_sql(text('select * from chem_property_lumpCom_spec'), con=bk_db)
     # Get the Lumped compound id (ids without InChI)
     lc_spec_ref_id=list(lc_spec_ref['id'][~lc_spec_ref['id'].str.contains('InChI')])
     # Get the dataframe where lumped compound ids of 'chem_property_lumpCom_spec' is in 'nmogdf'

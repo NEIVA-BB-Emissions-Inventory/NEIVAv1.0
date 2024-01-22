@@ -67,11 +67,7 @@ def voc_profile(dd, chem, ft):
     # Exclude the lumped compounds that has speciation from the 'nmogdf' dataset.
     nmog_final=nmog[~nmog['id'].isin(lc_spec_df['id'])]
     nmog_final=nmog_final.reset_index(drop=True)
-    
-    # Process the 'TERP' if chem is MOZART
-    if chem=='MOZT1':
-        terp_unassigned=nmog_final['ef'][nmog_final['S07']=='TERP'][nmog_final['MOZT1'].isnull()].sum()
-    
+        
     nmog_final=nmog_final[[chem,'ef','mm']]            
     #__
     df_final=pd.DataFrame() # The dataframe where the assignments of lumped compound from speceation will be assigned.
@@ -106,14 +102,7 @@ def voc_profile(dd, chem, ft):
         mean_mm=nmog_final['mm'][nmog_final[chem]==uu[i]].mean()
         prdf.loc[i,'ef']=totef
         prdf.loc[i,'mm']=mean_mm
-    
-    # The TERP total EF is distributed equally to the following model species.
-    if chem=='MOZT1':
-        m_terp_sp=['MYRC','APIN','BPIN','LIMON']
-        for i in range(len(m_terp_sp)):
-            ind=prdf[prdf['MOZT1']==m_terp_sp[i]].index[0]
-            prdf.loc[ind,'ef']=prdf['ef'].iloc[ind]+terp_unassigned/len(m_terp_sp)
-            
+                
     prdf['mole']=prdf['ef']/prdf['mm']
     
     all_unk = (unk1[efcol]/unk1['mm']).sum()+ (unk2[efcol]/unk2['mm']).sum()
