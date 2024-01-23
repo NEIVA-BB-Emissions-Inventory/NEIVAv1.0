@@ -54,6 +54,7 @@ def lump_com_with_speciation (nmog, chem):
     nmog = assign_GFED_lumed_ef_conv_factor (nmog)
     # Load Lumped Compounds with Speciation dataset.
     lc_spec_ref= pd.read_sql(text('select * from chem_property_lumpCom_spec'), con=bk_db)
+    lc_spec_ref = assign_GFED_lumed_ef_conv_factor (lc_spec_ref)
     # Get the Lumped compound id which is id's without an InChI
     lc_spec_ref_id=list(lc_spec_ref['id'][~lc_spec_ref['id'].str.contains('InChI')])
     # Get the dataframe where lumped compound ids of 'chem_property_lumpCom_spec' is in 'nmogdf'
