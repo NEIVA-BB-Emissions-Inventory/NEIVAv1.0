@@ -61,7 +61,7 @@ def calc_OHR (dd,chem, tot_voc, ft):
     nmog_final=nmog[~nmog['id'].isin(lc_spec_df['id'])]
     nmog_final=nmog_final.reset_index(drop=True)
     
-    nmog_final=nmog_final[[chem,'mole']]
+    nmog_final=nmog_final[[chem,'mole','kOH']]
     #__
     df_final=pd.DataFrame() # The dataframe where the assignments of lumped compound from speceation will be assigned.
     # iterate over 'lc_spec_df' dataframe
@@ -77,7 +77,7 @@ def calc_OHR (dd,chem, tot_voc, ft):
             df.loc[k,chem]=ll[chem][k]
             # Equally dividing the EF over the number of specie
             df.loc[k,'mole']=lc_spec_df['mole'].iloc[i]/len(ll)
-            #df.loc[k,'kOH']=ll['kOH'][k]
+            df.loc[k,'kOH']=ll['kOH'][k]
         df_final = pd.concat([df_final, df], ignore_index=True)
         df_final=df_final.reset_index(drop=True)
     # Adding the two datasets        
