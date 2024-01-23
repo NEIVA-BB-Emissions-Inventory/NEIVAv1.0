@@ -90,19 +90,14 @@ def calc_OHR (dd,chem, tot_voc, ft):
     
     nmog_final['mole_frac']=nmog_final['mole']/nmog_final['mole'].sum()
     nmog_final['conc']=nmog_final['mole_frac']*tot_voc # tot_voc in ppb
-    #nmog_final['ohr']=nmog_final['conc']*2.5e10*nmog_final['kOH']      
+    nmog_final['ohr']=nmog_final['conc']*2.5e10*nmog_final['kOH']      
 
     uu=list(nmog_final[chem][nmog_final[chem].notna()].unique())
     # Creating the model species profile dataframe
     ohrdf=pd.DataFrame()
     for i in range(len(uu)):
         ohrdf.loc[i,chem]=uu[i]
-        ohrdf.loc[i,'conc']=nmog_final['conc'][nmog_final[chem]==uu[i]].sum()
-    
-    ohrdf=ohrdf.merge(ss[['S07','k']], on='S07', how='left')
-    
-    ohrdf['OHR']=ohrdf['conc']*2.5e10*ohrdf['k']
-    ohrdf=ohrdf[ohrdf['OHR'].notna()].reset_index(drop=True)
+        ohrdf.loc[i,'OHR']=nmog_final['ohr'][nmog_final[chem]==uu[i]].sum()
     
     tot_ohr=ohrdf['OHR'].sum()
     ohrdf['OHR_frac']=ohrdf['OHR']/tot_ohr

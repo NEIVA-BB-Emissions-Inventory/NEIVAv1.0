@@ -83,7 +83,8 @@ def calc_VBS (dd, ft):
         df_final=df_final.append(df)
         df_final=df_final.reset_index(drop=True)
     # Adding the two datasets        
-    nmog_final=nmog_final.append(df_final)        
+    nmog_final = pd.concat([nmog_final, df_final], ignore_index=True)        
+        
     nmog_final=nmog_final.reset_index(drop=True)
     
     unk_totef=unk1[efcol].sum()+unk2[efcol].sum()
