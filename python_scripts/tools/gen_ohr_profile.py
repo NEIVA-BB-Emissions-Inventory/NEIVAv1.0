@@ -35,7 +35,7 @@ def calc_OHR (dd,chem, tot_voc, ft):
     tt2=pd.read_sql(text('select * from chem_property_lumpCom'), con=bk_db)
     
     # Final chem_property datasets
-    tt_f=tt.append(tt1).append(tt2)
+    tt_f = pd.concat([tt, tt1, tt2], ignore_index=True)
     tt_f=tt_f.reset_index(drop=True)
     tt_f=tt_f[['id','S07','S18B','S07T','MOZT1','S22', 'kOH']]
     
@@ -78,10 +78,10 @@ def calc_OHR (dd,chem, tot_voc, ft):
             # Equally dividing the EF over the number of specie
             df.loc[k,'mole']=lc_spec_df['mole'].iloc[i]/len(ll)
             #df.loc[k,'kOH']=ll['kOH'][k]
-        df_final=df_final.append(df)
+        df_final = pd.concat([df_final, df], ignore_index=True)
         df_final=df_final.reset_index(drop=True)
     # Adding the two datasets        
-    nmog_final=nmog_final.append(df_final)        
+    nmog_final = pd.concat([nmog_final, df_final], ignore_index=True)        
     nmog_final=nmog_final.reset_index(drop=True)
     
     unk_tot_mole=(unk1[efcol]/unk1['mm']).sum()+(unk2[efcol]/unk2['mm']).sum()
