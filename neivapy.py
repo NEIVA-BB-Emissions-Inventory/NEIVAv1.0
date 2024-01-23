@@ -24,4 +24,5 @@ from NEIVA.python_scripts.tools.gen_ohr_profile import *
 
 from NEIVA.python_scripts.tools.querying_functions_display_info import *
 from NEIVA.python_scripts.tools.querying_functions_select_ef import *
+from NEIVA.python_scripts.tools.speciation_profile import *
 
