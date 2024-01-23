@@ -26,8 +26,9 @@ def calc_VBS (dd, ft):
     efcol='AVG_'+ft.replace(' ','_')
     nmog['ef']=nmog[efcol]
     nmog=nmog[nmog['ef'].notna()].reset_index(drop=True)
-
-    nmog_final = lump_com_with_speciation (nmog, 'S07')
+    
+    chem='S07'
+    nmog_final = lump_com_with_speciation (nmog, chem)
     nmog_final = distribute_unk_ef (dd, efcol, nmog_final)
             
     nmog_final['bin']=pd.cut(nmog_final['cstar'], bins=range(0,14,1))
