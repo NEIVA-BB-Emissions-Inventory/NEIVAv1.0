@@ -39,7 +39,7 @@ def calc_VBS (dd, ft):
     #__
     
     # Final chem_property datasets
-    tt_f=tt.append(tt1).append(tt2)
+    tt_f = pd.concat([tt, tt1, tt2], ignore_index=True)
     tt_f=tt_f.reset_index(drop=True)
     tt_f=tt_f[['id','S07','S18B','S07T','MOZT1','S22', 'cstar']]
     
@@ -80,7 +80,7 @@ def calc_VBS (dd, ft):
             # Equally dividing the EF over the number of specie
             df.loc[k,'ef']=lc_spec_df['ef'].iloc[i]/len(ll)
             df.loc[k,'cstar']=ll['cstar'][k]
-        df_final=df_final.append(df)
+        df_final = pd.concat([df_final, df], ignore_index=True)
         df_final=df_final.reset_index(drop=True)
     # Adding the two datasets        
     nmog_final = pd.concat([nmog_final, df_final], ignore_index=True)        
