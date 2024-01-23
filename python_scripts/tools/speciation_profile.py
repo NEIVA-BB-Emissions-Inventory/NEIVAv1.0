@@ -30,7 +30,7 @@ def speciation_profile(ft,chem,spc):
   return df[['mm','formula','compound','smile',efcol,chem]][df[chem]==spc][df[efcol].notna()]
 
 
-def GFED_lumped_ef_calc (chem, ft, model_surrogate):
+def GFED_lumped_ef_calc (dd, chem, ft, model_surrogate):
     output_db=connect_db('neiva_output_db')
     bk_db=connect_db('backend_db')
     
