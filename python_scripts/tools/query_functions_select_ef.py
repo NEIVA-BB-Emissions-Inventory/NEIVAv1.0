@@ -136,7 +136,7 @@ def select_chemical_formula_rdf (ft, formula):
     
     col='AVG_'+ft.replace(' ','_')
     
-    return df[['mm','formula', col, 'id']][df['formula']==formula].reset_index(drop=True)
+    return df[['mm','formula', 'compound',col, 'id']][df['formula']==formula].reset_index(drop=True)
     
 
 
@@ -153,37 +153,44 @@ def plot_ef(compound,ft, table_name):
     df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
     efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
 
-  try:
-      iid=pcp.get_compounds(compound, 'name')[0].inchi
-      ind=df[df['id']==iid].index[0]
+    try:
+        if compound == 'PM<2.5':
+                ind=df[df['id']=='PM<2.5'].index[0]
+        if compound == 'BC':
+                ind=df[df['id']=='BC'].index[0]
+        if compound == 'BC':
+                ind=df[df['id']=='OC'].index[0]
+        else:
+              iid=pcp.get_compounds(compound, 'name')[0].inchi
+              ind=df[df['id']==iid].index[0]
 
-      efcoldf[compound]=df[efcoldf['efcol']].iloc[ind].values
-    
-      ef_vals=list(efcoldf[compound][efcoldf['fire_type']==ft][efcoldf[compound].notna()])
-      l1=efcoldf['study'][efcoldf['fire_type']==ft][efcoldf[compound].notna()]
-      l2=efcoldf['fuel_type'][efcoldf['fire_type']==ft][efcoldf[compound].notna()]
-      if table_name=='processed ef':
-        ef_legend=list(l1)
-      if table_name=='integrated ef':
-        ef_legend=list(l1+':'+l2)
+        efcoldf[compound]=df[efcoldf['efcol']].iloc[ind].values
       
-      # Plot the figure   
-      import seaborn as sns
-      pal = sns.color_palette('colorblind',10)
-    
-      ax1 = plt.subplot(111)
-      plt.scatter(np.arange(len(ef_vals)), ef_vals, zorder=3, color=pal[0], edgecolor='k')
-      plt.ylabel('Emission factor (g/kg)', fontsize=10)
+        ef_vals=list(efcoldf[compound][efcoldf['fire_type']==ft][efcoldf[compound].notna()])
+        l1=efcoldf['study'][efcoldf['fire_type']==ft][efcoldf[compound].notna()]
+        l2=efcoldf['fuel_type'][efcoldf['fire_type']==ft][efcoldf[compound].notna()]
+        if table_name=='processed ef':
+          ef_legend=list(l1)
+        if table_name=='integrated ef':
+          ef_legend=list(l1+':'+l2)
       
-      plt.tick_params(labelsize=10)
-      ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
-      ax1.tick_params(axis='x',which='both',bottom=False)
-      plt.setp(ax1.spines.values(),lw=1.5)
-    
-      plt.title("Compound:"+compound+"; Fire type:"+ ft, fontsize=10)
-      plt.xticks(np.arange(len(ef_vals)), ef_legend, rotation=90)
-      plt.tight_layout()
-  except:
+        # Plot the figure   
+        import seaborn as sns
+        pal = sns.color_palette('colorblind',10)
+      
+        ax1 = plt.subplot(111)
+        plt.scatter(np.arange(len(ef_vals)), ef_vals, zorder=3, color=pal[0], edgecolor='k')
+        plt.ylabel('Emission factor (g/kg)', fontsize=10)
+        
+        plt.tick_params(labelsize=10)
+        ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
+        ax1.tick_params(axis='x',which='both',bottom=False)
+        plt.setp(ax1.spines.values(),lw=1.5)
+      
+        plt.title("Compound:"+compound+"; Fire type:"+ ft, fontsize=10)
+        plt.xticks(np.arange(len(ef_vals)), ef_legend, rotation=90)
+        plt.tight_layout()
+    except:
          return 'Cannot assign ID. Use chemical formula to search.'
      
   return
