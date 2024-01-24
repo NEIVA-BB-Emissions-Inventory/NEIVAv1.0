@@ -22,9 +22,9 @@ from NEIVA.python_scripts.tools.gen_voc_profile import *
 from NEIVA.python_scripts.tools.gen_vbs_profile import *
 from NEIVA.python_scripts.tools.gen_ohr_profile import *
 
-from NEIVA.python_scripts.tools.querying_functions_display_info import *
-from NEIVA.python_scripts.tools.querying_functions_select_ef import *
-from NEIVA.python_scripts.tools.speciation_profile import *
+from NEIVA.python_scripts.tools.query_functions_display_info import *
+from NEIVA.python_scripts.tools.query_functions_select_ef import *
+from NEIVA.python_scripts.tools.query_functions_speciation_profile import *
 
 
 from NEIVA.python_scripts.tools.join_ef_property_table import *

@@ -81,8 +81,11 @@ def select_compound(ft, com_name,table_name):
         efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
         allcol= ['legend','measurement_type',com_name]
 
-    aa=pcp.get_compounds(com_name, 'name')[0].inchi
-    ind=df[df['id']==aa].index[0]
+    try:
+        aa=pcp.get_compounds(com_name, 'name')[0].inchi
+        ind=df[df['id']==aa].index[0]
+    except:
+        return 'Cannot assin ID. Search by formula'
 
     efcol=list(efcoldf['efcol'])
 
@@ -98,12 +101,15 @@ def select_compound_rdf (ft, com_name):
     output_db=connect_db('neiva_output_db')
     df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
     
-    aa=pcp.get_compounds(com_name, 'name')[0].inchi
-    ind=df[df['id']==aa].index[0]
+    try:
+        aa=pcp.get_compounds(com_name, 'name')[0].inchi
+        ind=df[df['id']==aa].index[0]
+    except:
+        return 'Cannot assin ID. Search by formula'
     
     col='AVG_'+ft.replace(' ','_')
     
-    return df[['mm','formula','compound',col]].iloc[ind]
+    return df[['mm','formula','compound',col]][ind-1:ind]
 
 # Plots ef data of a specified fire type and table name
 def plot_ef(compound,ft, table_name):
@@ -130,14 +136,24 @@ def plot_ef(compound,ft, table_name):
     ef_legend=list(l1)
   if table_name=='integrated ef':
     ef_legend=list(l1+':'+l2)
+  
+  # Plot the figure   
+  import seaborn as sns
+  pal = sns.color_palette('bright',10)
 
-  ax = plt.subplot(111)
-  plt.scatter(np.arange(len(ef_vals)), ef_vals)
-  plt.ylabel('Emission factor (g/kg)')
-  plt.title("Compound:"+compound+"; Fire type:"+ ft)
+  ax1 = plt.subplot(111)
+  plt.scatter(np.arange(len(ef_vals)), ef_vals, zorder=3, color=pal[0], edgecolor='k')
+  plt.ylabel('Emission factor (g/kg)', fontsize=15)
+  
+  plt.tick_params(labelsize=15)
+  ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
+  ax1.tick_params(axis='x',which='both',bottom=False)
+  plt.setp(ax1.spines.values(),lw=1.5)
+
+  plt.title("Compound:"+compound+"; Fire type:"+ ft, fontsize=15, weight='bold')
   plt.xticks(np.arange(len(ef_vals)), ef_legend, rotation=90)
-  plt.grid(alpha=0.2)
   plt.tight_layout()
+  
   return
 
 

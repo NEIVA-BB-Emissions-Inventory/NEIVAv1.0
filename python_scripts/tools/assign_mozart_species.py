@@ -19,14 +19,14 @@ def mozart_species(nmog):
         'OLEP','ROOH','OLE1', 'OLE2','FURNS','RCOOH','RCHO',
         'R1NO3','LVKS','OLEC','ARO1','OLED','BUT13','OLEA2',
         'OLEA1','AFG1','STYRS','PHEN','OLE4','ALK5','MEK','CRES',
-        'ARO2','OTH2','NAPS','DLIMO','SVPHE','MVK','XYNL']
+        'ARO2','OTH2','NAPS','DLIMO','SVPHE','MVK','XYNL', 'SESQ']
     
     # Corresponding MOZT1 model species
     ll2=['CH2O','MEK','BIGALK','C3H6','BIGENE','BIGENE','NROG',
          'BIGENE','XYLENES', 'BIGENE', 'BIGENE','XYLENES','TOLUENE',
          'BIGALK','ALKNIT','MEK','BIGENE','XYLENES','BIGENE','BIGENE','MEK',
          'TOLUENE','MEK','BIGENE','PHENOL','BIGENE','BIGALK','MEK','CRESOL',
-         'XYLENES','NROG','XYLENES','LIMON','PHENOL','MVK','CRESOL']
+         'XYLENES','NROG','XYLENES','LIMON','PHENOL','MVK','CRESOL','BCARY']
     
     adf=pd.DataFrame()
     adf['MOZRT_sp']=ll2
