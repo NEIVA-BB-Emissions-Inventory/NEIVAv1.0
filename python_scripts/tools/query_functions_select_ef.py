@@ -84,18 +84,38 @@ def select_compound(ft, com_name,table_name):
     try:
         aa=pcp.get_compounds(com_name, 'name')[0].inchi
         ind=df[df['id']==aa].index[0]
+        efcol=list(efcoldf['efcol'])
+
+        efcoldf[com_name]=df[efcol].iloc[ind].values
+        efcoldf[com_name]=round(efcoldf[com_name],3)
+    
+        ll=efcoldf[allcol][efcoldf['fire_type']==ft]
+        ll=ll.sort_values(by='measurement_type')
+        ll=ll[ll[com_name].notna()]
+        ll=ll.reset_index(drop=True)
+        return ll
+
     except:
         return 'Cannot assin ID. Search by formula'
 
-    efcol=list(efcoldf['efcol'])
+def select_chemical_formula (ft, formula,table_name):
+    bk_db=connect_db('backend_db')
+    output_db=connect_db('neiva_output_db')
 
-    efcoldf[com_name]=df[efcol].iloc[ind].values
+    if table_name=='integrated ef':
+        df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
+        efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
 
-    ll=efcoldf[allcol][efcoldf['fire_type']==ft]
-    ll=ll.sort_values(by='measurement_type')
-    ll=ll[ll[com_name].notna()]
-    ll=ll.reset_index(drop=True)
-    return ll
+    if table_name=='processed ef':
+        df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
+        efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
+    
+    ll=list(efcoldf['efcol'][efcoldf['fire_type']==ft])
+    cols=['mm','formula','compound']+ll
+    
+    return df[cols][df['formula']==formula].reset_index(drop=True)
+
+
 
 def select_compound_rdf (ft, com_name):
     output_db=connect_db('neiva_output_db')
@@ -105,9 +125,20 @@ def select_compound_rdf (ft, com_name):
         aa=pcp.get_compounds(com_name, 'name')[0].inchi
         ind=df[df['id']==aa].index[0]
         col='AVG_'+ft.replace(' ','_')
-        return df[['mm','formula','compound',col]][ind:ind+1]
+        df[col]=round(df[col],3)
+        return df[['mm','formula','compound',col]][ind:ind+1].reset_index(drop=True)
     except:
         return 'Cannot assign ID. Use chemical formula to search.'
+
+def select_chemical_formula_rdf (ft, formula):
+    output_db=connect_db('neiva_output_db')
+    df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+    
+    col='AVG_'+ft.replace(' ','_')
+    
+    return df[['mm','formula', col, 'id']][df['formula']==formula].reset_index(drop=True)
+    
+
 
 # Plots ef data of a specified fire type and table name
 def plot_ef(compound,ft, table_name):
@@ -138,7 +169,7 @@ def plot_ef(compound,ft, table_name):
       
       # Plot the figure   
       import seaborn as sns
-      pal = sns.color_palette('bright',10)
+      pal = sns.color_palette('colorblind',10)
     
       ax1 = plt.subplot(111)
       plt.scatter(np.arange(len(ef_vals)), ef_vals, zorder=3, color=pal[0], edgecolor='k')
@@ -149,7 +180,7 @@ def plot_ef(compound,ft, table_name):
       ax1.tick_params(axis='x',which='both',bottom=False)
       plt.setp(ax1.spines.values(),lw=1.5)
     
-      plt.title("Compound:"+compound+"; Fire type:"+ ft, fontsize=10, weight='bold')
+      plt.title("Compound:"+compound+"; Fire type:"+ ft, fontsize=10)
       plt.xticks(np.arange(len(ef_vals)), ef_legend, rotation=90)
       plt.tight_layout()
   except:
