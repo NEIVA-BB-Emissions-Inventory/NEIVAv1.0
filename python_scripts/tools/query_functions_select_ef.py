@@ -144,7 +144,36 @@ def select_chemical_formula_rdf (ft, formula):
 def plot_ef(compound,ft, table_name):
   bk_db=connect_db('backend_db')
   output_db=connect_db('neiva_output_db')
+  
+  def get_ind (df, compound):
+        if compound == 'PM<2.5':
+            ind=list(df[df['pollutant_category']=='PM total'][df['compound'].str.contains('PM')].index)
+            return ind
+        if compound == 'BC':
+            ind=list(df[df['id']=='BC'].index)
+            return ind
+        if compound == 'OC':
+            ind=list(df[df['id']=='OC'].index)
+            return ind
+        else:
+            iid=pcp.get_compounds(compound, 'name')[0].inchi
+            ind=list(df[df['id']==iid].index)
+            return ind
+  
+  def prepare_legend(fdf):
+    for i in range(len(fdf)):
+        fdf.loc[i,'legend']=fdf['study'].iloc[i]
+        
+    ii=list(fdf[fdf['fuel_type'].notna()].index)
+    ii2=list(fdf[fdf['cookstove_name'].notna()].index)
     
+    for i in ii:
+        fdf.loc[i,'legend']=fdf['study'].iloc[i]+':'+fdf['fuel_type'].iloc[i]
+    for i in ii2:
+        fdf.loc[i,'legend']=fdf['study'].iloc[i]+'_'+fdf['fuel_type'].iloc[i]+'_'+fdf['cookstove_name'].iloc[i]
+        
+    return fdf
+        
   if table_name=='processed ef':
     df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
     efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
@@ -154,32 +183,26 @@ def plot_ef(compound,ft, table_name):
     efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
 
     try:
-        if compound == 'PM<2.5':
-                ind=df[df['id']=='PM<2.5'].index[0]
-        if compound == 'BC':
-                ind=df[df['id']=='BC'].index[0]
-        if compound == 'BC':
-                ind=df[df['id']=='OC'].index[0]
-        else:
-              iid=pcp.get_compounds(compound, 'name')[0].inchi
-              ind=df[df['id']==iid].index[0]
-
-        efcoldf[compound]=df[efcoldf['efcol']].iloc[ind].values
-      
-        ef_vals=list(efcoldf[compound][efcoldf['fire_type']==ft][efcoldf[compound].notna()])
-        l1=efcoldf['study'][efcoldf['fire_type']==ft][efcoldf[compound].notna()]
-        l2=efcoldf['fuel_type'][efcoldf['fire_type']==ft][efcoldf[compound].notna()]
-        if table_name=='processed ef':
-          ef_legend=list(l1)
-        if table_name=='integrated ef':
-          ef_legend=list(l1+':'+l2)
-      
+        iind=get_ind (df, compound)
+        efcoldf[compound]=df[efcoldf['efcol']][df.index.isin(iind)].mean().values
+        
+        fdf=pd.DataFrame()
+        fdf = efcoldf[efcoldf['fire_type']==ft][efcoldf[compound].notna()].reset_index(drop=True)
+        fdf=prepare_legend(fdf)
         # Plot the figure   
         import seaborn as sns
         pal = sns.color_palette('colorblind',10)
       
         ax1 = plt.subplot(111)
-        plt.scatter(np.arange(len(ef_vals)), ef_vals, zorder=3, color=pal[0], edgecolor='k')
+        
+        x=n.arange(len(fdf))
+        x_lab=list(fdf[compound][fdf['measurement_type']=='lab'].index)
+        ef_lab=list(fdf[compound][fdf['measurement_type']=='lab'])
+        
+        plt.scatter(x, fdf[compound], zorder=3, color=pal[0], edgecolor='k', label='Field EF')
+        plt.scatter(x_lab, ef_lab, zorder=3, color=pal[1], edgecolor='k', label='Lab EF')
+        
+        
         plt.ylabel('Emission factor (g/kg)', fontsize=10)
         
         plt.tick_params(labelsize=10)
@@ -189,6 +212,7 @@ def plot_ef(compound,ft, table_name):
       
         plt.title("Compound:"+compound+"; Fire type:"+ ft, fontsize=10)
         plt.xticks(np.arange(len(ef_vals)), ef_legend, rotation=90)
+        plt.legend()
         plt.tight_layout()
     except:
          return 'Cannot assign ID. Use chemical formula to search.'
