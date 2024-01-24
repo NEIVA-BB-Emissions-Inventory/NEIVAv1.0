@@ -203,7 +203,7 @@ def plot_ef(compound,ft, table_name):
         x_lab=list(fdf[compound][fdf['measurement_type']=='lab'].index)
         ef_lab=list(fdf[compound][fdf['measurement_type']=='lab'])
         
-        plt.scatter(x, fdf[compound], zorder=3, color=pal[4], edgecolor='k', label='Field EF')
+        plt.scatter(x, fdf[compound], zorder=3, color=pal[0], edgecolor='k', label='Field EF')
         plt.scatter(x_lab, ef_lab, zorder=3, color=pal[1], edgecolor='k', label='Lab EF')
         
         
@@ -220,6 +220,7 @@ def plot_ef(compound,ft, table_name):
         plt.tight_layout()
     except:
          return 'Cannot assign ID. Use chemical formula to search.'
-    return fdf
+    return
+ 
      
 
