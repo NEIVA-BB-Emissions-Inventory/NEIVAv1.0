@@ -164,9 +164,9 @@ def prepare_legend(fdf):
   ii2=list(fdf[fdf['cookstove_name'].notna()].index)
   
   for i in ii:
-      fdf.loc[i,'legend']=fdf['study'].iloc[i]+'\n'+fdf['fuel_type'].iloc[i]
+      fdf.loc[i,'legend']=fdf['study'].iloc[i]+'\n'+'('+fdf['fuel_type'].iloc[i]+')'
   for i in ii2:
-      fdf.loc[i,'legend']=fdf['study'].iloc[i]+'\n'+fdf['fuel_type'].iloc[i]+'\n'+fdf['cookstove_name'].iloc[i]
+      fdf.loc[i,'legend']=fdf['study'].iloc[i]+'\n'+'('+fdf['fuel_type'].iloc[i]+'\n'+','+fdf['cookstove_name'].iloc[i]+')'
       
   return fdf
 
@@ -215,7 +215,7 @@ def plot_ef(compound,ft, table_name):
         plt.setp(ax1.spines.values(),lw=1.5)
       
         plt.title("Compound: "+compound+"; Fire type:"+ ft, fontsize=11)
-        plt.xticks(x, fdf['legend'], rotation=90)
+        plt.xticks(x, fdf['legend'], rotation=90, fontsize=7)
         plt.legend(fontsize=10)
         plt.tight_layout()
     except:
