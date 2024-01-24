@@ -24,8 +24,11 @@ def speciation_profile(ft,chem,spc):
   output_db=connect_db('neiva_output_db')
     
   pp=pd.read_sql(text('select * from Property_Surrogate'), con=output_db)
+  pp=mozart_species(pp)
+  
   df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
   df=df.merge(pp[pp.columns[3:]],on='id', how='left')
+  
   efcol='AVG_'+ft.replace(' ','_')
   return df[['mm','formula','compound','smile',efcol,chem]][df[chem]==spc][df[efcol].notna()]
 
