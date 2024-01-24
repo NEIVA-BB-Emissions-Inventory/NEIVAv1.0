@@ -195,7 +195,7 @@ def plot_ef(compound,ft, table_name):
         
         # Plot the figure   
         import seaborn as sns
-        pal = sns.color_palette('colorblind',10)
+        pal = sns.color_palette('bright',10)
       
         ax1 = plt.subplot(111)
         
@@ -222,5 +222,57 @@ def plot_ef(compound,ft, table_name):
          return 'Cannot assign ID. Use chemical formula to search.'
     return
  
-     
+def mce_vd_ef ():
+    bk_db=connect_db('backend_db')
+    output_db=connect_db('neiva_output_db')
+              
+    if table_name=='processed ef':
+        df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
+        efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
+    
+    if table_name=='integrated ef':
+        df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
+        efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
+
+    try:
+        iind=get_ind (df, compound)
+        efcoldf[compound]=df[efcoldf['efcol']][df.index.isin(iind)].mean().values
+        
+        fdf=pd.DataFrame()
+        if ft == 'all':
+            fdf = efcoldf[efcoldf[compound].notna()].reset_index(drop=True)
+        else: 
+            fdf = efcoldf[efcoldf['fire_type']==ft][efcoldf[compound].notna()].reset_index(drop=True)
+        fdf= fdf[fdf['MCE'].notna()]
+        fdf=fdf.reset_index(drop=True)
+        
+        # Plot the figure   
+        import seaborn as sns
+        pal = sns.color_palette('bright',10)
+      
+        ax1 = plt.subplot(111)
+        
+        x=np.arange(len(fdf))
+        mce_lab=fdf['MCE'][fdf['measurement_type']=='lab']
+        ef_lab=fdf[compound][fdf['measurement_type']=='lab']
+        
+        plt.scatter(fdf['MCE'], fdf[compound], zorder=3, color=pal[0], edgecolor='k', label='Field EF')
+        plt.scatter(mce_lab, ef_lab, zorder=3, color=pal[1], edgecolor='k', label='Lab EF')
+        
+        plt.ylabel('Emission factor (g/kg)', fontsize=11)
+        plt.xlabel('MCE', fontsize=11)
+       
+        plt.tick_params(labelsize=11)
+        ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
+        ax1.tick_params(axis='x',which='both',bottom=False)
+        plt.setp(ax1.spines.values(),lw=1.5)
+      
+        plt.title("Compound: "+compound+"; Fire type:"+ ft, fontsize=11)
+        plt.xticks(x, fdf['MCE'], rotation=90, fontsize=11)
+        plt.legend(fontsize=10)
+        plt.tight_layout()
+    except:
+         return 'Cannot assign ID. Use chemical formula to search.'
+    return
+         
 
