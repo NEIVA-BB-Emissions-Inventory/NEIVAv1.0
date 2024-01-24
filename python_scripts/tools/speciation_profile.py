@@ -109,8 +109,8 @@ def weighted_property (dd, ft, chem):
         prdf.loc[i,'vp']=round(weighted_vp,3)
         prdf.loc[i,'hc']=weighted_hc
         
-    prdf['mole_frac']=prdf['mole']/prdf['mole'].sum()
-    prdf=prdf.sort_values(by='mole_frac', ascending=False)
+    prdf['Mole_fraction']=prdf['Mole']/prdf['Mole'].sum()
+    prdf=prdf.sort_values(by='Mole_fraction', ascending=False)
     prdf=prdf.reset_index(drop=True)
      
     return prdf
