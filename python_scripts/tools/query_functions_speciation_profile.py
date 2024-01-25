@@ -104,16 +104,16 @@ def weighted_property (dd, ft, chem):
         weighted_hc=(ef*hc).sum()/ef.sum()
         weighted_vp=(ef*vp).sum()/ef.sum()
       
-        prdf.loc[i,'EF']=round(totef,3)
-        prdf.loc[i,'Mole']=round(totmole,3)
+        prdf.loc[i,'ef']=round(totef,3)
+        prdf.loc[i,'mole']=round(totmole,3)
         prdf.loc[i,'mm']=round(weighted_mm,3)
         prdf.loc[i,'kOH']=weighted_koh/1e-12
         prdf.loc[i,'cstar']=round(weighted_cstar,3)
         prdf.loc[i,'vp']=round(weighted_vp,3)
         prdf.loc[i,'hc']=weighted_hc
         
-    prdf['Mole_fraction']=prdf['Mole']/prdf['Mole'].sum()
-    prdf=prdf.sort_values(by='Mole_fraction', ascending=False)
+    prdf['mole_fraction']=prdf['mole']/prdf['mole'].sum()
+    prdf=prdf.sort_values(by='mole_fraction', ascending=False)
     prdf=prdf.reset_index(drop=True)
      
     return prdf
