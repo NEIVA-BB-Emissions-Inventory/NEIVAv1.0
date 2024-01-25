@@ -118,3 +118,25 @@ def weighted_property (dd, ft, chem):
      
     return prdf
 
+def nmog_with_high_ohr (dd, ft, totvoc, chem):
+    output_db=connect_db('neiva_output_db')
+    bk_db=connect_db('backend_db')
+    
+    nmog=join_ef_property(dd)
+    # Set EF column based on the input parameter 'fire type'
+    efcol='AVG_'+ft.replace(' ','_')
+    nmog['ef']=nmog[efcol]
+    nmog=nmog[nmog['ef'].notna()].reset_index(drop=True)
+
+    nmog['mole']=nmog['ef']/nmog['mm']
+    # The list of unique model species
+    
+    nmog['mole_frac']=nmog['mole']/nmog['mole'].sum()
+    nmog['conc']=nmog['mole_frac']*tot_voc # tot_voc in ppb
+    nmog['ohr']=nmog['conc']*2.5e10*nmog['kOH']      
+    
+    nmog=nmog.sort_values(by='ohr', ascending=False)
+    nmog=nmog.reset_index(drop=True)
+    return nmog[['mm','formula','compound',efcol, 'ohr', 'kOH', 'S07']][:25]
+    
+

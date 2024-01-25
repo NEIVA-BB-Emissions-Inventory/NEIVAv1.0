@@ -201,7 +201,7 @@ def plot_ef(compound,ft, table_name):
         import seaborn as sns
         pal = sns.color_palette('bright',10)
         
-        plt.figure(figsize=(10,6))
+        plt.figure(figsize=(12,8))
         ax1 = plt.subplot(111)
         
         x=np.arange(len(fdf))
@@ -225,7 +225,7 @@ def plot_ef(compound,ft, table_name):
         plt.tight_layout()
     except:
          return 'Cannot assign ID. Use chemical formula to search.'
-    return fdf
+    return
      
 def mce_vs_ef (compound, ft):
     bk_db=connect_db('backend_db')
@@ -290,4 +290,184 @@ def mce_vs_ef (compound, ft):
          return 'Cannot assign ID. Use chemical formula to search.'
     return
          
+
+def abundant_nmog (ft, chem, aa):
+    bk_db=connect_db('backend_db')
+    output_db=connect_db('neiva_output_db')
+    
+    efcol='AVG_'+ft.replace(' ','_')
+    rdf=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+    rdf=rdf[rdf[efcol].notna()]
+    rdf=rdf[rdf['pollutant_category']=='NMOC_g'].reset_index(drop=True)
+    
+    pp=pd.read_sql(text('select * from Property_Surrogate'), con=output_db)
+    
+    rdf=rdf.sort_values(by=efcol, ascending=False)
+    rdf=rdf.reset_index(drop=True)
+    
+    rdf=rdf.merge(pp[['id',chem, aa]], on='id', how='left')
+    
+    return rdf[['mm','formula','compound', efcol, chem, aa, 'id']][:25].reset_index(drop=True)
+
+
+def plot_abundant_nmog (ft):
+    bk_db=connect_db('backend_db')
+    output_db=connect_db('neiva_output_db')
+    
+    efcol='AVG_'+ft.replace(' ','_')
+    rdf=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+    rdf=rdf[rdf[efcol].notna()]
+    rdf=rdf[rdf['pollutant_category']=='NMOC_g'].reset_index(drop=True)
+        
+    rdf=rdf.sort_values(by=efcol, ascending=False)
+    rdf=rdf.reset_index(drop=True)
+    
+    rdf=rdf[:25]
+    
+    import seaborn as sns
+    pal = sns.color_palette('bright',10)
+    
+    plt.figure(figsize=(10,8))
+    ax1 = plt.subplot(111)
+    
+    x=np.arange(len(rdf))
+    
+    plt.scatter(x, rdf[efcol], zorder=3, color=pal[0], edgecolor='k', label='Recommended EF')
+    
+    plt.ylabel('Emission factor (g/kg)', fontsize=11)
+    plt.xlabel('Compound', fontsize=11)
+            
+    plt.tick_params(labelsize=11)
+    ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
+    ax1.tick_params(axis='x',which='both',bottom=False)
+    plt.setp(ax1.spines.values(),lw=1.5)
+  
+    plt.title("Abundant NMOC_g' Fire type:"+ ft, fontsize=11)
+    plt.xticks(x, rdf['compound'], rotation=90)
+    plt.legend(fontsize=10)
+    plt.tight_layout()
+    
+    return 
+
+def nmog_with_high_n (ft, chem, aa):
+    bk_db=connect_db('backend_db')
+    output_db=connect_db('neiva_output_db')
+    
+    ncol='N_'+ft.replace(' ','_')
+    efcol='AVG_'+ft.replace(' ','_')
+    rdf=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+    rdf=rdf[rdf[efcol].notna()]
+    rdf=rdf[rdf['pollutant_category']=='NMOC_g'].reset_index(drop=True)
+    
+    pp=pd.read_sql(text('select * from Property_Surrogate'), con=output_db)
+    
+    rdf=rdf.sort_values(by=efcol, ascending=False)
+    rdf=rdf.reset_index(drop=True)
+    
+    rdf=rdf.merge(pp[['id',chem, aa]], on='id', how='left')
+    
+    return rdf[['mm','formula','compound', efcol, ncol,chem, aa, 'id']][:25].reset_index(drop=True)
+
+def boxplot_abundant_nmog (ft):
+    bk_db=connect_db('backend_db')
+    output_db=connect_db('neiva_output_db')
+    
+    efcol='AVG_'+ft.replace(' ','_')
+    rdf=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+    rdf=rdf[rdf[efcol].notna()]
+    rdf=rdf[rdf['pollutant_category']=='NMOC_g'].reset_index(drop=True)
+        
+    rdf=rdf.sort_values(by=efcol, ascending=False)
+    rdf=rdf.reset_index(drop=True)
+    
+    rdf=rdf[:25]
+    
+    pp=pd.read_sql(text('select * from Processed_EF'), con=output_db)
+    efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
+    efcol=efcoldf['efcol'][efcoldf['fire_type']==ft]
+    
+    import seaborn as sns
+    pal = sns.color_palette('bright',10)
+    
+    plt.figure(figsize=(10,8))
+    ax1 = plt.subplot(111)
+    
+    x=np.arange(len(rdf))
+    
+    for i in range(len(rdf)):
+        aa=pp[efcol][pp['id']==rdf['id'].iloc[i]].T.dropna()
+        vals=aa[aa.columns[0]].values   
+        
+        bp1 = ax1.boxplot(vals,showmeans=True,meanline=True,showfliers=True,patch_artist=True,positions=[i], widths=0.3,\
+            medianprops=dict(linewidth=0),boxprops= dict(linewidth=1.5,edgecolor='k',facecolor=pal[0]),\
+                  whiskerprops=dict(linestyle='-',linewidth=1,color='k'),\
+                  meanprops=dict(color='red',linewidth=2,linestyle='-'),
+                  flierprops = dict(marker='+',markerfacecolor=pal[8], markersize=7,))
+
+    plt.yscale('log')
+    plt.ylabel('Emission factor (g/kg)', fontsize=11)
+    plt.xlabel('Compound', fontsize=11)
+            
+    plt.tick_params(labelsize=11)
+    ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
+    ax1.tick_params(axis='x',which='both',bottom=False)
+    plt.setp(ax1.spines.values(),lw=1.5)
+  
+    plt.title("Abundant NMOC_g' Fire type:"+ ft, fontsize=11)
+    plt.xticks(x, rdf['compound'], rotation=90)
+    plt.legend(fontsize=10)
+    plt.tight_layout()
+    
+    return 
+
+
+def boxplot_ef (compound, ft, table_name):
+    bk_db=connect_db('backend_db')
+    output_db=connect_db('neiva_output_db')
+              
+    if table_name=='processed ef':
+        df=pd.read_sql('select * from Processed_EF', con=output_db)
+        efcoldf=pd.read_sql('select * from info_efcol_processed_data', con=bk_db)
+    
+    if table_name=='integrated ef':
+        df=pd.read_sql('select * from Integrated_EF', con=output_db)
+        efcoldf=pd.read_sql('select * from bkdb_info_efcol', con=bk_db)
+
+    try:
+        iind=get_ind (df, compound)
+        efcol=efcoldf['efcol'][efcoldf['fire_type']==ft]
+        aa=df[efcol][df.index.isin(iind)].T.dropna()
+        vals=aa[aa.columns[0]].values   
+
+        import seaborn as sns
+        pal = sns.color_palette('bright',10)
+        
+        plt.figure(figsize=(5,8))
+        ax1 = plt.subplot(111)
+        x=[0]
+        bp1 = ax1.boxplot(vals,showmeans=True,meanline=True,showfliers=True,patch_artist=True,positions=[i], widths=0.3,\
+            medianprops=dict(linewidth=0),boxprops= dict(linewidth=1.5,edgecolor='k',facecolor=pal[0]),\
+                  whiskerprops=dict(linestyle='-',linewidth=1,color='k'),\
+                  meanprops=dict(color='red',linewidth=2,linestyle='-'),
+                  flierprops = dict(marker='+',markerfacecolor=pal[8], markersize=7,))
+    
+        plt.ylabel('Emission factor (g/kg)', fontsize=11)
+        plt.xlabel('Compound', fontsize=11)
+                
+        plt.tick_params(labelsize=11)
+        ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
+        ax1.tick_params(axis='x',which='both',bottom=False)
+        plt.setp(ax1.spines.values(),lw=1.5)
+      
+        plt.title("Abundant NMOC_g' Fire type:"+ ft, fontsize=11)
+        plt.xticks(x, compound, rotation=90)
+        plt.legend(fontsize=10)
+        plt.tight_layout()
+    except:
+         return 'Cannot assign ID. Use chemical formula to search.'
+    
+    return
+
+
+
 
