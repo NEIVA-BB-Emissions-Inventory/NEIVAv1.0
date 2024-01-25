@@ -11,6 +11,8 @@ from NEIVA.python_scripts.data_integration_process.integrate_pdb_tables import *
 from NEIVA.python_scripts.data_integration_process.merge_lumped_com import *
 from NEIVA.python_scripts.data_integration_process.align_lumped_com_and_spec import *
 from NEIVA.python_scripts.data_integration_process.data_formatting_functions import  *
+from NEIVA.python_scripts.data_integration_process.assign_id import  *
+
 from NEIVA.python_scripts.connect_with_mysql import *
 
 from NEIVA.python_scripts.data_processing_steps.assign_fractional_contribution import *
