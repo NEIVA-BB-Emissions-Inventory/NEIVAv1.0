@@ -431,7 +431,7 @@ def boxplot_ef (compound, ft, table_name):
     
     if table_name=='integrated ef':
         df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
-        efcoldf=pd.read_sql('select * from bkdb_info_efcol', con=bk_db)
+        efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
 
     try:
         iind=get_ind (df, compound)
