@@ -427,7 +427,7 @@ def boxplot_ef (compound, ft, table_name):
               
     if table_name=='processed ef':
         df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
-        efcoldf=pd.read_sql('select * from info_efcol_processed_data', con=bk_db)
+        efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
     
     if table_name=='integrated ef':
         df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
