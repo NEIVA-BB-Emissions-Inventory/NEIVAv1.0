@@ -100,7 +100,7 @@ def plot_ef(compound,ft, table_name):
         plt.tight_layout()
     except:
          return 'Cannot assign ID. Use chemical formula to search.'
-    return fdf
+    return
      
 def mce_vs_ef (compound, ft):
     bk_db=connect_db('backend_db')
@@ -224,7 +224,7 @@ def boxplot_abundant_nmog (ft):
   
     plt.title("Abundant NMOC_g' Fire type:"+ ft, fontsize=11)
     plt.xticks(x, rdf['legend'], rotation=90)
-    plt.legend(fontsize=10)
+    #plt.legend(fontsize=10)
     plt.tight_layout()
     
     return 
