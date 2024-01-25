@@ -151,6 +151,10 @@ def get_ind (df, compound):
       if compound == 'OC':
           ind=list(df[df['id']=='OC'].index)
           return ind
+      if compound == 'NOx_as_NO':
+          ind=list(df[df['id']=='NOx_as_NO'].index)
+          return ind
+
       else:
           iid=pcp.get_compounds(compound, 'name')[0].inchi
           ind=list(df[df['id']==iid].index)
@@ -164,9 +168,9 @@ def prepare_legend(fdf):
   ii2=list(fdf[fdf['cookstove_name'].notna()].index)
   
   for i in ii:
-      fdf.loc[i,'legend']=fdf['study'].iloc[i]+'\n'+'('+fdf['fuel_type'].iloc[i]+')'
+      fdf.loc[i,'legend']=fdf['study'].iloc[i]+'\n'+fdf['fuel_type'].iloc[i]
   for i in ii2:
-      fdf.loc[i,'legend']=fdf['study'].iloc[i]+'\n'+'('+fdf['fuel_type'].iloc[i]+'\n'+','+fdf['cookstove_name'].iloc[i]+')'
+      fdf.loc[i,'legend']=fdf['study'].iloc[i]+'\n'+fdf['fuel_type'].iloc[i]+'\n'+fdf['cookstove_name'].iloc[i]
       
   return fdf
 
@@ -196,7 +200,8 @@ def plot_ef(compound,ft, table_name):
         # Plot the figure   
         import seaborn as sns
         pal = sns.color_palette('bright',10)
-      
+        
+        plt.figure(figsize=(10,6))
         ax1 = plt.subplot(111)
         
         x=np.arange(len(fdf))
@@ -204,7 +209,7 @@ def plot_ef(compound,ft, table_name):
         ef_lab=list(fdf[compound][fdf['measurement_type']=='lab'])
         
         plt.scatter(x, fdf[compound], zorder=3, color=pal[0], edgecolor='k', label='Field EF')
-        plt.scatter(x_lab, ef_lab, zorder=3, color=pal[1], edgecolor='k', label='Lab EF')
+        plt.scatter(x_lab, ef_lab, zorder=3, color=pal[8], edgecolor='k', label='Lab EF')
         
         
         plt.ylabel('Emission factor (g/kg)', fontsize=11)
@@ -215,24 +220,19 @@ def plot_ef(compound,ft, table_name):
         plt.setp(ax1.spines.values(),lw=1.5)
       
         plt.title("Compound: "+compound+"; Fire type:"+ ft, fontsize=11)
-        plt.xticks(x, fdf['legend'], rotation=90, fontsize=7)
+        plt.xticks(x, fdf['legend'], rotation=90)
         plt.legend(fontsize=10)
         plt.tight_layout()
     except:
          return 'Cannot assign ID. Use chemical formula to search.'
-    return
- 
-def mce_vd_ef ():
+    return fdf
+     
+def mce_vs_ef (compound, ft):
     bk_db=connect_db('backend_db')
     output_db=connect_db('neiva_output_db')
               
-    if table_name=='processed ef':
-        df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
-        efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
-    
-    if table_name=='integrated ef':
-        df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
-        efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
+    df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
+    efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
 
     try:
         iind=get_ind (df, compound)
@@ -248,8 +248,11 @@ def mce_vd_ef ():
         
         # Plot the figure   
         import seaborn as sns
+        from sklearn.metrics import r2_score
+        
         pal = sns.color_palette('bright',10)
-      
+        
+        plt.figure(figsize=(10,6))
         ax1 = plt.subplot(111)
         
         x=np.arange(len(fdf))
@@ -257,19 +260,31 @@ def mce_vd_ef ():
         ef_lab=fdf[compound][fdf['measurement_type']=='lab']
         
         plt.scatter(fdf['MCE'], fdf[compound], zorder=3, color=pal[0], edgecolor='k', label='Field EF')
-        plt.scatter(mce_lab, ef_lab, zorder=3, color=pal[1], edgecolor='k', label='Lab EF')
+        plt.scatter(mce_lab, ef_lab, zorder=3, color=pal[8], edgecolor='k', label='Lab EF')
         
         plt.ylabel('Emission factor (g/kg)', fontsize=11)
         plt.xlabel('MCE', fontsize=11)
-       
+        
+        if len(fdf)>4:
+            coefficients = np.polyfit(fdf['MCE'], fdf[compound], 1)
+            poly_fit = np.poly1d(coefficients)
+            slope=round(coefficients[0],2)
+            intercept=round(coefficients[1],2)
+            # Calculate R-squared
+            y_pred = poly_fit(fdf['MCE'])
+            r_squared = r2_score(fdf[compound], y_pred)
+            
+            plt.plot(fdf['MCE'], poly_fit(fdf['MCE']), color=pal[6], label='y='+str(slope)+'*X + '+str(intercept) )
+            #plt.scatter(0,0, color='k', label= 'R-squared:'+str(round(r_squared,2)) )            
+        
         plt.tick_params(labelsize=11)
         ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
         ax1.tick_params(axis='x',which='both',bottom=False)
         plt.setp(ax1.spines.values(),lw=1.5)
       
         plt.title("Compound: "+compound+"; Fire type:"+ ft, fontsize=11)
-        plt.xticks(x, fdf['MCE'], rotation=90, fontsize=11)
-        plt.legend(fontsize=10)
+        #plt.xticks(x, fdf['MCE'], rotation=90, fontsize=11)
+        plt.legend(fontsize=11)
         plt.tight_layout()
     except:
          return 'Cannot assign ID. Use chemical formula to search.'
