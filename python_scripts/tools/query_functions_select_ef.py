@@ -361,7 +361,7 @@ def nmog_with_high_n (ft, chem, aa):
     
     pp=pd.read_sql(text('select * from Property_Surrogate'), con=output_db)
     
-    rdf=rdf.sort_values(by=efcol, ascending=False)
+    rdf=rdf.sort_values(by=ncol, ascending=False)
     rdf=rdf.reset_index(drop=True)
     
     rdf=rdf.merge(pp[['id',chem, aa]], on='id', how='left')
@@ -426,11 +426,11 @@ def boxplot_ef (compound, ft, table_name):
     output_db=connect_db('neiva_output_db')
               
     if table_name=='processed ef':
-        df=pd.read_sql('select * from Processed_EF', con=output_db)
+        df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
         efcoldf=pd.read_sql('select * from info_efcol_processed_data', con=bk_db)
     
     if table_name=='integrated ef':
-        df=pd.read_sql('select * from Integrated_EF', con=output_db)
+        df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
         efcoldf=pd.read_sql('select * from bkdb_info_efcol', con=bk_db)
 
     try:

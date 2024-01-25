@@ -132,7 +132,7 @@ def nmog_with_high_ohr (dd, ft, totvoc, chem):
     # The list of unique model species
     
     nmog['mole_frac']=nmog['mole']/nmog['mole'].sum()
-    nmog['conc']=nmog['mole_frac']*tot_voc # tot_voc in ppb
+    nmog['conc']=nmog['mole_frac']*totvoc # tot_voc in ppb
     nmog['ohr']=nmog['conc']*2.5e10*nmog['kOH']      
     
     nmog=nmog.sort_values(by='ohr', ascending=False)
