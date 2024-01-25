@@ -107,7 +107,7 @@ def weighted_property (dd, ft, chem):
         prdf.loc[i,'ef']=round(totef,3)
         prdf.loc[i,'mole']=round(totmole,3)
         prdf.loc[i,'mm']=round(weighted_mm,3)
-        prdf.loc[i,'kOH']=weighted_koh/1e-12
+        prdf.loc[i,'kOH']=weighted_koh
         prdf.loc[i,'cstar']=round(weighted_cstar,3)
         prdf.loc[i,'vp']=round(weighted_vp,3)
         prdf.loc[i,'hc']=weighted_hc
