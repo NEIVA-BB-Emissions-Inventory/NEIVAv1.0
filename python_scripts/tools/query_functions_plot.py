@@ -251,7 +251,7 @@ def boxplot_ef (compound, ft, table_name):
         import seaborn as sns
         pal = sns.color_palette('bright',10)
         
-        plt.figure(figsize=(5,6))
+        plt.figure(figsize=(3,5))
         ax1 = plt.subplot(111)
         x=[0]
         bp1 = ax1.boxplot(vals,showmeans=True,meanline=True,showfliers=True,patch_artist=True,positions=[1], widths=0.3,\
@@ -334,7 +334,7 @@ def plot_model_surrogate (dd, ft, chem, model_surrogate):
     ax1.tick_params(axis='x',which='both',bottom=False)
     plt.setp(ax1.spines.values(),lw=1.5)
   
-    plt.title("Top 25 compounds with respect to EF", fontsize=12)
+    plt.title("Top NMOC_g with respect to EF", fontsize=12)
     plt.xticks(x, nmog['legend'], rotation=90)
     #plt.legend(fontsize=10)
     plt.tight_layout()

@@ -15,7 +15,9 @@ from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
 from NEIVA.python_scripts.data_integration_process.sort_molec_formula import *
 
 from NEIVA.python_scripts.tools.number_format_function import *
-from NEIVA.python_scripts.tools.join_ef_property_table import *
+from NEIVA.python_scripts.tools.join_ef_property import *
+
+from NEIVA.python_scripts.tools.query_function_plot import get_ind
 
 
 from sqlalchemy import text
@@ -100,8 +102,8 @@ def select_compound(ft, com_name,table_name):
         allcol= ['legend','measurement_type',com_name]
 
     try:
-        aa=pcp.get_compounds(com_name, 'name')[0].inchi
-        ind=df[df['id']==aa].index[0]
+        ind = get_ind (df, com_name)
+        
         efcol=list(efcoldf['efcol'])
 
         efcoldf[com_name]=df[efcol].iloc[ind].values
@@ -239,8 +241,7 @@ def compare_lab_field (ft, com_name,table_name):
         df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
         efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
     try:
-        aa=pcp.get_compounds(com_name, 'name')[0].inchi
-        ind=df[df['id']==aa].index[0]
+        ind = get_ind (df, com_name)
         
         co_ind=df[df['id']=='InChI=1S/CO/c1-2'].index[0]
         co2_ind=df[df['id']=='InChI=1S/CO2/c2-1-3'].index[0]
