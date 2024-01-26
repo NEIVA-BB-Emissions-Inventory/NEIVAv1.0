@@ -287,9 +287,9 @@ def plot_model_surrogate (dd, ft, chem, model_surrogate, pr):
     
     nmog=join_ef_property(dd)
     # Set EF column based on the input parameter 'fire type'
-    efcol='AVG_'+ft.replace(' ','_')
+    avgcol='AVG_'+ft.replace(' ','_')
     ncol='N_'+ft.replace(' ','_')
-    nmog['ef']=nmog[efcol]
+    nmog['ef']=nmog[avgcol]
     nmog=nmog[nmog['ef'].notna()].reset_index(drop=True)
     nmog['mole']=nmog['ef']/nmog['mm']
     nmog['mole_frac']=nmog['mole']/nmog['mole'].sum()
