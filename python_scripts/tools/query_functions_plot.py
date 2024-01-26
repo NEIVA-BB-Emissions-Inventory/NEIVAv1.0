@@ -276,5 +276,70 @@ def boxplot_ef (compound, ft, table_name):
     
     return
 
+def plot_model_surrogate (dd, ft, chem, model_surrogate, pr):
+    output_db=connect_db('neiva_output_db')
+    bk_db=connect_db('backend_db')
+    
+    pp=pd.read_sql(text('select * from Processed_EF'), con=output_db)
+    efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
+    efcol=efcoldf['efcol'][efcoldf['fire_type']==ft]
+    
+    nmog=join_ef_property(dd)
+    # Set EF column based on the input parameter 'fire type'
+    efcol='AVG_'+ft.replace(' ','_')
+    nmog['ef']=nmog[efcol]
+    nmog=nmog[nmog['ef'].notna()].reset_index(drop=True)
+    nmog['mole']=nmog['ef']/nmog['mm']
+    nmog['mole_frac']=nmog['mole']/nmog['mole'].sum()
+    
+    nmog=nmog[nmog[chem]==model_surrogate]
+    nmog=nmog.sort_values(by=pr, ascending=False)
+    nmog=nmog.reset_index(drop=True)
+    
+    nmog_original=nmog
+    if len(nmog)>25:
+        nmog=nmog[:25]
+    
+    for i in range(len(nmog)):
+        if len(nmog['compound'].iloc[i])>15:
+            nmog.nmog[i,'compound']=nmog['formula'].iloc[i]
+    for i in range(len(nmog)):
+        nmog.loc[i,'legend']=nmog['compound'].iloc[i]+';n='+str(nmog[ncol].iloc[i]).replace('.0','')
+
+
+    import seaborn as sns
+    pal = sns.color_palette('bright',10)
+    
+    plt.figure(figsize=(10,8))
+    ax1 = plt.subplot(111)
+    
+    x=np.arange(len(nmog))
+    
+    for i in range(len(nmog)):
+        aa=pp[efcol][pp['id']==nmog['id'].iloc[i]].T.dropna()
+        vals=aa[aa.columns[0]].values   
+        
+        bp1 = ax1.boxplot(vals,showmeans=True,meanline=True,showfliers=True,patch_artist=True,positions=[i], widths=0.3,\
+            medianprops=dict(linewidth=0),boxprops= dict(linewidth=1.5,edgecolor='k',facecolor=pal[0]),\
+                  whiskerprops=dict(linestyle='-',linewidth=1,color='k'),\
+                  meanprops=dict(color='red',linewidth=2,linestyle='-'),
+                  flierprops = dict(marker='+',markerfacecolor=pal[8], markersize=7,))
+
+    plt.yscale('log')
+    plt.ylabel('Emission factor (g/kg)', fontsize=11)
+    #plt.xlabel('Compound', fontsize=11)
+    plt.text(0.8, 0.8, 'Number of NMOC_g'+'('+model_surroagete+')'+': '+str(len(nmog_original)), fontsize=11, color='black', transform=plt.gca().transAxes)
+    plt.tick_params(labelsize=11)
+    ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
+    ax1.tick_params(axis='x',which='both',bottom=False)
+    plt.setp(ax1.spines.values(),lw=1.5)
+  
+    plt.title("NMOC_g sorted by "+str(pp)+" Fire type:"+ ft, fontsize=11)
+    plt.xticks(x, nmog['legend'], rotation=90)
+    #plt.legend(fontsize=10)
+    plt.tight_layout()
+    
+    return 
+    
 
 

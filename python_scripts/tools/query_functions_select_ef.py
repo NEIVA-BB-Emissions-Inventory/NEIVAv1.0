@@ -74,12 +74,14 @@ def select_ef_pollutant_category(ft, pc):
     efcol='AVG_'+ft.replace(' ','_')
     rdf=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
     
-    rdf=rdf.applymap(lambda x: rounding(x))
-
     if pc=='PM optical property':
-      return (rdf[['compound',efcol]][rdf['pollutant_category']==pc][rdf[efcol].notna()].reset_index(drop=True))
+        fdf=rdf[['compound',efcol]][rdf['pollutant_category']==pc][rdf[efcol].notna()].reset_index(drop=True)
+        fdf=fdf.applymap(lambda x: rounding(x))
+        return fdf
     else:
-      return (rdf[['mm','formula','compound',efcol]][rdf['pollutant_category']==pc][rdf[efcol].notna()].reset_index(drop=True))
+        fdf=rdf[['mm','formula','compound',efcol]][rdf['pollutant_category']==pc][rdf[efcol].notna()].reset_index(drop=True)
+        fdf=fdf.applymap(lambda x: rounding(x))
+        return fdf
 
 # This function returns the EF of specified compound name and table name (integrated ef, processed ef and recommended ef)
 def select_compound(ft, com_name,table_name):
