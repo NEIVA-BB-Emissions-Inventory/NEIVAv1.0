@@ -11,6 +11,8 @@ import numpy as np
 from NEIVA.python_scripts.connect_with_mysql import*
 from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
 from NEIVA.python_scripts.tools.join_ef_property_table import *
+from NEIVA.python_scripts.tools.number_format_function import *
+
 
 from sqlalchemy import text
 import matplotlib.pyplot as plt
@@ -37,6 +39,8 @@ def calc_VBS (dd, ft):
     fdf=pd.DataFrame()
     fdf['bin']=aa.index
     fdf['ef/sum_ef']=aa
+    
+    fdf=fdf.applymap(lambda x: rounding(x))
 
     return fdf
 

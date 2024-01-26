@@ -13,6 +13,9 @@ from NEIVA.python_scripts.connect_with_mysql import*
 from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
 from NEIVA.python_scripts.tools.join_ef_property_table import *
 
+from NEIVA.python_scripts.tools.number_format_function import *
+
+
 from sqlalchemy import text
 import matplotlib.pyplot as plt
 
@@ -50,5 +53,7 @@ def calc_OHR (dd,chem, tot_voc, ft):
     
     ohrdf=ohrdf.sort_values(by='OHR', ascending=False)
     ohrdf=ohrdf.reset_index(drop=True)
+    
+    ohrdf=ohrdf.applymap(lambda x: rounding(x))
 
     return ohrdf
