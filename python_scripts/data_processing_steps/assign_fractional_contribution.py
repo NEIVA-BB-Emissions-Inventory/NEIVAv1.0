@@ -71,6 +71,8 @@ def Get_fc_calc(fc,df):
     Returns:
     - The modified 'df' DataFrame with fractional contribution adjustments.
     '''
+    primary_db=connect_db('primary_db')
+
     # Load the hatch15 dataset.
     hid=pd.read_sql(text('select * from pdb_hatch15'), con=primary_db)    
     # Get a list of unique formulas from the 'fc' DataFrame.
