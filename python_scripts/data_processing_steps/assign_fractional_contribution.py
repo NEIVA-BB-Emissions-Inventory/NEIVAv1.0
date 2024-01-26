@@ -102,7 +102,6 @@ def Get_fc_calc(fc,df):
             
             # Test if the sum of speciation EF values is within 2.5 times the lumped value.
             if test(lumpval,spec_ef_sum)=='yes':
-                print(formula, df['compound'].iloc[lumpid])
                 # Alpply fractional contribution to speciation indices.
                 for ind in spec_inds: 
                     fc_val=df[col].iloc[ind]/spec_ef_sum
