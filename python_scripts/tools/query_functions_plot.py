@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 from NEIVA.python_scripts.connect_with_mysql import*
 from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
 from NEIVA.python_scripts.data_integration_process.sort_molec_formula import *
+from NEIVA.python_scripts.tools.join_ef_property_table import *
 
 from sqlalchemy import text
 
@@ -305,7 +306,6 @@ def plot_model_surrogate (dd, ft, chem, model_surrogate, pr):
             nmog.nmog[i,'compound']=nmog['formula'].iloc[i]
     for i in range(len(nmog)):
         nmog.loc[i,'legend']=nmog['compound'].iloc[i]+';n='+str(nmog[ncol].iloc[i]).replace('.0','')
-
 
     import seaborn as sns
     pal = sns.color_palette('bright',10)
