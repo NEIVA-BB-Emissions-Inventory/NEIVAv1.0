@@ -203,4 +203,77 @@ def nmog_with_high_n (ft, chem, aa):
     
     return rdf[['mm','formula','compound', efcol, ncol,chem, aa, 'id']][:25].reset_index(drop=True)
 
+def ef_sorted_by_property (dd, ft, chem, model_surrogate, pr):
+    output_db=connect_db('neiva_output_db')
+    bk_db=connect_db('backend_db')
+    
+    nmog=join_ef_property(dd)
+    # Set EF column based on the input parameter 'fire type'
+    avgcol='AVG_'+ft.replace(' ','_')
+    ncol='N_'+ft.replace(' ','_')
+    stdcol='STD_'+ft.replace(' ','_')
+    nmog['ef']=nmog[avgcol]
+    nmog=nmog[nmog['ef'].notna()].reset_index(drop=True)
+    nmog['mole']=nmog['ef']/nmog['mm']
+    nmog['mole_frac']=nmog['mole']/nmog['mole'].sum()
+    
+    nmog=nmog[nmog[chem]==model_surrogate]
+    nmog=nmog.sort_values(by=pr, ascending=False)
+    nmog=nmog.reset_index(drop=True)
+        
+    nmog=nmog.applymap(lambda x: rounding(x))
+    nmog=nmog[['mm','formula','compound',avgcol,ncol,stdcol, chem, pr]]
+
+    return nmog
+    
+def compare_lab_field (ft, com_name,table_name):
+    bk_db=connect_db('backend_db')
+    output_db=connect_db('neiva_output_db')
+
+    if table_name=='integrated ef':
+        df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
+        efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
+
+    if table_name=='processed ef':
+        df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
+        efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
+    try:
+        aa=pcp.get_compounds(com_name, 'name')[0].inchi
+        ind=df[df['id']==aa].index[0]
+        
+        co_ind=df[df['id']=='InChI=1S/CO/c1-2'].index[0]
+        co2_ind=df[df['id']=='InChI=1S/CO2/c2-1-3'].index[0]
+        
+        efcol=list(efcoldf['efcol'])
+
+        efcoldf[com_name]=df[efcol].iloc[ind].values
+        efcoldf['co']=df[efcol].iloc[co_ind].values
+        efcoldf['co2']=df[efcol].iloc[co2_ind].values
+        
+        efcoldf['MCE']=(efcoldf['co2']/44) / ((efcoldf['co2']/44) + (efcoldf['co']/28))
+    
+        ll=efcoldf[[com_name,'MCE','measurement_type']][efcoldf['fire_type']==ft]
+        ll=ll.sort_values(by='measurement_type')
+        ll=ll[ll[com_name].notna()]
+        ll=ll.reset_index(drop=True)
+        
+        lab_avg=ll[com_name][ll['measurement_type']=='lab'].mean()
+        field_avg=ll[com_name][ll['measurement_type']=='field'].mean()
+        mce_lab = ll['MCE'][ll['measurement_type']=='lab'].mean()
+        mce_field = ll['MCE'][ll['measurement_type']=='field'].mean()
+        n_lab=len(ll[com_name][ll['measurement_type']=='lab'])
+        n_field=len(ll[com_name][ll['measurement_type']=='field'])
+        
+        data = {
+            'compound': [com_name.capitalize()+'EF average', 'Average MCE', 'data count'],
+            'Lab': [lab_avg, mce_lab, n_lab],
+            'Field': [field_avg,mce_field,n_field]
+             }          
+        df=pd.DataFrame(data)
+        df=df.applymap(lambda x: rounding(x))
+        return df
+    except:
+        return 'Cannot assin ID. Search by formula'
+
+    
 

@@ -305,15 +305,14 @@ def plot_model_surrogate (dd, ft, chem, model_surrogate, pr):
     for i in range(len(nmog)):
         if len(nmog['compound'].iloc[i])>15:
             nmog.loc[i,'compound']=nmog['formula'].iloc[i]
-    
-    for i in range(len(nmog)):
-        legend=nmog['compound'].iloc[i]+';n='+str(nmog[ncol].iloc[i]).replace('.0','')
-        nmog.loc[i,'legend']=legend
+    # for i in range(len(nmog)):
+    #     legend=nmog['compound'].iloc[i]+';n='+str(nmog[ncol].iloc[i]).replace('.0','')
+    #     nmog.loc[i,'legend']=legend
 
     import seaborn as sns
     pal = sns.color_palette('bright',10)
     
-    plt.figure(figsize=(15,8))
+    plt.figure(figsize=(12,8))
     ax1 = plt.subplot(111)
     
     x=np.arange(len(nmog))
@@ -331,14 +330,14 @@ def plot_model_surrogate (dd, ft, chem, model_surrogate, pr):
     plt.yscale('log')
     plt.ylabel('Emission factor (g/kg)', fontsize=11)
     #plt.xlabel('Compound', fontsize=11)
-    plt.text(0.8, 0.8, 'Number of NMOC_g'+'('+model_surrogate+')'+': '+str(len(nmog_original)), fontsize=11, color='black', transform=plt.gca().transAxes)
+    plt.text(0.8, 0.9, 'Number of NMOC_g'+'('+model_surrogate+')'+': '+str(len(nmog_original)), fontsize=12, color='black', transform=plt.gca().transAxes)
     plt.tick_params(labelsize=11)
     ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
     ax1.tick_params(axis='x',which='both',bottom=False)
     plt.setp(ax1.spines.values(),lw=1.5)
   
-    plt.title("NMOC_g sorted by "+str(pr)+" Fire type:"+ ft, fontsize=11)
-    plt.xticks(x, nmog['legend'], rotation=90)
+    plt.title("NMOC_g sorted by "+str(pr)+"; Fire type:"+ ft, fontsize=12)
+    plt.xticks(x, nmog['compound'], rotation=90)
     #plt.legend(fontsize=10)
     plt.tight_layout()
     
