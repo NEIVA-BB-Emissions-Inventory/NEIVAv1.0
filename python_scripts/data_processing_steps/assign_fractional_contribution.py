@@ -71,8 +71,6 @@ def Get_fc_calc(fc,df):
     Returns:
     - The modified 'df' DataFrame with fractional contribution adjustments.
     '''
-    primary_db=connect_db('primary_db')
-
     # Load the hatch15 dataset.
     hid=pd.read_sql(text('select * from pdb_hatch15'), con=primary_db)    
     # Get a list of unique formulas from the 'fc' DataFrame.
@@ -118,7 +116,7 @@ def Get_fc_calc(fc,df):
                 df.loc[lumpind,'STD_'+col.split('AVG_')[1]]=0
     return df
 
-def calculalate_fractional_contribution(df):
+def fc_calc(df):
     '''
     Calculates fractional contribution (FC) values based on two fractional contribution datasets.
     Updates the 'df' DataFrame with FC values.
@@ -128,19 +126,18 @@ def calculalate_fractional_contribution(df):
     Returns:
     - The 'df' DataFrame with FC values.
     '''
-    bk_db=connect_db('backend_db')
+    
     # Loading two FC datasets
     fc=pd.read_sql(text('select * from bkdb_fc_calc_simple'), con=bk_db) # Simple fractional contribution dataset
     sfc=pd.read_sql(text('select * from bkdb_fc_calc_specific'), con=bk_db) # Specific fractional contribution dataset
     
     # Separate lumped compounds from specific FC dataset 
-    f_m_lids=assign_formula_type(sfc)[2] # Get formulas with multiple lumped IDs from 'sfc'
+    f_m_lids=GrpFormula(sfc)[2] # Get formulas with multiple lumped IDs from 'sfc'
     fc2=sfc[~sfc['formula'].isin(f_m_lids)] # Dataframe without multiple lumped compounds.
     sfc=sfc[sfc['formula'].isin(f_m_lids)].reset_index(drop=True) # Assign multiple lumped compounds to 'sfc'
     
     # Append the seperated data back to the simple FC dataset.
-    fc = pd.concat([fc, fc2], ignore_index=True)
-    
+    fc = pd.concat([fc, fc2], ignore_index=True)    
     # Get average columns in the in df.
     avgcols=GrpCol(df)[4] 
     
