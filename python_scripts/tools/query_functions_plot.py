@@ -277,7 +277,7 @@ def boxplot_ef (compound, ft, table_name):
     
     return
 
-def plot_model_surrogate (dd, ft, chem, model_surrogate, pr):
+def plot_model_surrogate (dd, ft, chem, model_surrogate):
     output_db=connect_db('neiva_output_db')
     bk_db=connect_db('backend_db')
     
@@ -295,19 +295,19 @@ def plot_model_surrogate (dd, ft, chem, model_surrogate, pr):
     nmog['mole_frac']=nmog['mole']/nmog['mole'].sum()
     
     nmog=nmog[nmog[chem]==model_surrogate]
-    nmog=nmog.sort_values(by=pr, ascending=False)
+    nmog=nmog.sort_values(by=mole_frac, ascending=False)
     nmog=nmog.reset_index(drop=True)
     
-    nmog_original=nmog
     if len(nmog)>25:
         nmog=nmog[:25]
     
     for i in range(len(nmog)):
         if len(nmog['compound'].iloc[i])>15:
             nmog.loc[i,'compound']=nmog['formula'].iloc[i]
-    # for i in range(len(nmog)):
-    #     legend=nmog['compound'].iloc[i]+';n='+str(nmog[ncol].iloc[i]).replace('.0','')
-    #     nmog.loc[i,'legend']=legend
+    
+    for i in range(len(nmog)):
+        legend=nmog['compound'].iloc[i]+';n='+str(nmog[ncol].iloc[i]).replace('.0','')
+        nmog.loc[i,'legend']=legend
 
     import seaborn as sns
     pal = sns.color_palette('bright',10)
@@ -330,13 +330,13 @@ def plot_model_surrogate (dd, ft, chem, model_surrogate, pr):
     plt.yscale('log')
     plt.ylabel('Emission factor (g/kg)', fontsize=11)
     #plt.xlabel('Compound', fontsize=11)
-    plt.text(0.8, 0.9, 'Number of NMOC_g'+'('+model_surrogate+')'+': '+str(len(nmog_original)), fontsize=12, color='black', transform=plt.gca().transAxes)
+    #plt.text(0.8, 0.9, 'Number of NMOC_g'+'('+model_surrogate+')'+': '+str(len(nmog_original)), fontsize=12, color='black', transform=plt.gca().transAxes)
     plt.tick_params(labelsize=11)
     ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
     ax1.tick_params(axis='x',which='both',bottom=False)
     plt.setp(ax1.spines.values(),lw=1.5)
   
-    plt.title("NMOC_g sorted by "+str(pr)+"; Fire type:"+ ft, fontsize=12)
+    plt.title("Fire type:"+ ft, fontsize=12)
     plt.xticks(x, nmog['compound'], rotation=90)
     #plt.legend(fontsize=10)
     plt.tight_layout()

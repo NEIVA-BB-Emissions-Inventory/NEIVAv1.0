@@ -15,7 +15,7 @@ from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
 from NEIVA.python_scripts.data_integration_process.sort_molec_formula import *
 
 from NEIVA.python_scripts.tools.number_format_function import *
-from NEIVA.python_scripts.tools.join_ef_property import *
+from NEIVA.python_scripts.tools.join_ef_property_table import *
 
 
 from sqlalchemy import text
