@@ -126,7 +126,8 @@ def fc_calc(df):
     Returns:
     - The 'df' DataFrame with FC values.
     '''
-    
+    bk_db=connect_db('backend_db')
+
     # Loading two FC datasets
     fc=pd.read_sql(text('select * from bkdb_fc_calc_simple'), con=bk_db) # Simple fractional contribution dataset
     sfc=pd.read_sql(text('select * from bkdb_fc_calc_specific'), con=bk_db) # Specific fractional contribution dataset
