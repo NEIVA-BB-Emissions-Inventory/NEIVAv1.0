@@ -251,7 +251,7 @@ def boxplot_ef (compound, ft, table_name):
         import seaborn as sns
         pal = sns.color_palette('bright',10)
         
-        plt.figure(figsize=(5,8))
+        plt.figure(figsize=(5,6))
         ax1 = plt.subplot(111)
         x=[0]
         bp1 = ax1.boxplot(vals,showmeans=True,meanline=True,showfliers=True,patch_artist=True,positions=[1], widths=0.3,\

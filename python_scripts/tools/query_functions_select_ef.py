@@ -15,6 +15,7 @@ from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
 from NEIVA.python_scripts.data_integration_process.sort_molec_formula import *
 
 from NEIVA.python_scripts.tools.number_format_function import *
+from NEIVA.python_scripts.tools.join_ef_property import *
 
 
 from sqlalchemy import text
@@ -265,7 +266,7 @@ def compare_lab_field (ft, com_name,table_name):
         n_field=len(ll[com_name][ll['measurement_type']=='field'])
         
         data = {
-            'compound': [com_name.capitalize()+'EF average', 'Average MCE', 'data count'],
+            'label': [com_name.capitalize()+' EF mean', 'MCE mean', 'data count'],
             'Lab': [lab_avg, mce_lab, n_lab],
             'Field': [field_avg,mce_field,n_field]
              }          
