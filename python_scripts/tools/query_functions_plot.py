@@ -303,12 +303,12 @@ def plot_model_surrogate (dd, ft, chem, model_surrogate, pr):
     
     for i in range(len(nmog)):
         if len(nmog['compound'].iloc[i])>15:
-            nmog.nmog[i,'compound']=nmog['formula'].iloc[i]
+            nmog.loc[i,'compound']=nmog['formula'].iloc[i]
     for i in range(len(nmog)):
         nmog.loc[i,'legend']=nmog['compound'].iloc[i]+';n='+str(nmog[ncol].iloc[i]).replace('.0','')
 
     import seaborn as sns
-    pal = sns.color_palette('bright',10)
+    pal = sns.color_palette('pastel',10)
     
     plt.figure(figsize=(10,8))
     ax1 = plt.subplot(111)
