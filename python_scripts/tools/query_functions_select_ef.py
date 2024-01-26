@@ -17,7 +17,7 @@ from NEIVA.python_scripts.data_integration_process.sort_molec_formula import *
 from NEIVA.python_scripts.tools.number_format_function import *
 from NEIVA.python_scripts.tools.join_ef_property_table import *
 
-from NEIVA.python_scripts.tools.query_function_plot import get_ind
+from NEIVA.python_scripts.tools.query_functions_plot import get_ind
 
 
 from sqlalchemy import text
