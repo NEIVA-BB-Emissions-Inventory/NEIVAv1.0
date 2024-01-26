@@ -133,7 +133,7 @@ def fc_calc(df):
     sfc=pd.read_sql(text('select * from bkdb_fc_calc_specific'), con=bk_db) # Specific fractional contribution dataset
     
     # Separate lumped compounds from specific FC dataset 
-    f_m_lids=GrpFormula(sfc)[2] # Get formulas with multiple lumped IDs from 'sfc'
+    f_m_lids=assign_formula_type(sfc)[2] # Get formulas with multiple lumped IDs from 'sfc'
     fc2=sfc[~sfc['formula'].isin(f_m_lids)] # Dataframe without multiple lumped compounds.
     sfc=sfc[sfc['formula'].isin(f_m_lids)].reset_index(drop=True) # Assign multiple lumped compounds to 'sfc'
     
