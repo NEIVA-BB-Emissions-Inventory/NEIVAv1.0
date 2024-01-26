@@ -334,8 +334,8 @@ def plot_model_surrogate (dd, ft, chem, model_surrogate):
     ax1.tick_params(axis='x',which='both',bottom=False)
     plt.setp(ax1.spines.values(),lw=1.5)
   
-    plt.title("Fire type:"+ ft, fontsize=12)
-    plt.xticks(x, nmog['compound'], rotation=90)
+    plt.title("Top 25 compounds with respect to EF", fontsize=12)
+    plt.xticks(x, nmog['legend'], rotation=90)
     #plt.legend(fontsize=10)
     plt.tight_layout()
     
