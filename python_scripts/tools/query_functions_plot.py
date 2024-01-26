@@ -291,11 +291,9 @@ def plot_model_surrogate (dd, ft, chem, model_surrogate):
     ncol='N_'+ft.replace(' ','_')
     nmog['ef']=nmog[avgcol]
     nmog=nmog[nmog['ef'].notna()].reset_index(drop=True)
-    nmog['mole']=nmog['ef']/nmog['mm']
-    nmog['mole_frac']=nmog['mole']/nmog['mole'].sum()
     
     nmog=nmog[nmog[chem]==model_surrogate]
-    nmog=nmog.sort_values(by=mole_frac, ascending=False)
+    nmog=nmog.sort_values(by='ef', ascending=False)
     nmog=nmog.reset_index(drop=True)
     
     if len(nmog)>25:
