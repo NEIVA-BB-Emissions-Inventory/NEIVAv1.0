@@ -309,7 +309,7 @@ def plot_model_surrogate (dd, ft, chem, model_surrogate, pr):
         nmog.loc[i,'legend']=nmog['compound'].iloc[i]+';n='+str(nmog[ncol].iloc[i]).replace('.0','')
 
     import seaborn as sns
-    pal = sns.color_palette('pastel',10)
+    pal = sns.color_palette('bright',10)
     
     plt.figure(figsize=(10,8))
     ax1 = plt.subplot(111)
@@ -329,7 +329,7 @@ def plot_model_surrogate (dd, ft, chem, model_surrogate, pr):
     plt.yscale('log')
     plt.ylabel('Emission factor (g/kg)', fontsize=11)
     #plt.xlabel('Compound', fontsize=11)
-    plt.text(0.8, 0.8, 'Number of NMOC_g'+'('+model_surroagete+')'+': '+str(len(nmog_original)), fontsize=11, color='black', transform=plt.gca().transAxes)
+    plt.text(0.8, 0.8, 'Number of NMOC_g'+'('+model_surrogate+')'+': '+str(len(nmog_original)), fontsize=11, color='black', transform=plt.gca().transAxes)
     plt.tick_params(labelsize=11)
     ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
     ax1.tick_params(axis='x',which='both',bottom=False)
