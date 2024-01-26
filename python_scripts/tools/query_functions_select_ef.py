@@ -14,6 +14,9 @@ from NEIVA.python_scripts.connect_with_mysql import*
 from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
 from NEIVA.python_scripts.data_integration_process.sort_molec_formula import *
 
+from NEIVA.python_scripts.tools.number_format_function import *
+
+
 from sqlalchemy import text
 
 
@@ -31,8 +34,11 @@ def select_pm_data (ft, table_name):
         efcoldf['OC']=df[efcol][df['id']=='OC'].values[0]
         efcoldf['PM2.5']=df[efcol][df['id']=='PM2.5'].values[0]
         efcoldf['OA']=df[efcol][df['id']=='OC'].values[0]
+        
+        fdf=efcoldf[['legend','MCE','PM2.5','OC','BC','OA']][efcoldf['fire_type']==ft].reset_index(drop=True)
+        fdf=fdf.applymap(lambda x: rounding(x))
 
-        return (efcoldf[['legend','MCE','PM2.5','OC','BC','OA']][efcoldf['fire_type']==ft].reset_index(drop=True))
+        return fdf
 
     if table_name=='processed ef':
         efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
@@ -43,14 +49,21 @@ def select_pm_data (ft, table_name):
         efcoldf['OC']=df[efcol][df['id']=='OC'].values[0]
         efcoldf['PM2.5']=df[efcol][df['id']=='PM2.5'].values[0]
         efcoldf['OA']=df[efcol][df['id']=='OC'].values[0]
+        
+        fdf=efcoldf[['legend','PM2.5','OC','BC','OA']][efcoldf['fire_type']==ft].reset_index(drop=True)
+        fdf=fdf.applymap(lambda x: rounding(x))
 
-        return (efcoldf[['legend','PM2.5','OC','BC','OA']][efcoldf['fire_type']==ft].reset_index(drop=True))
+        return fdf
 
     if table_name=='recommended ef':
         df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
         efcol='AVG_'+ft.replace(' ','_')
         iid=['PM<2.5','OC','BC','OA']
-        return df[['compound',efcol]][df['id'].isin(iid)].reset_index(drop=True)
+        
+        fdf=df[['compound',efcol]][df['id'].isin(iid)].reset_index(drop=True)
+        fdf=fdf.applymap(lambda x: rounding(x))
+        
+        return fdf
 
 
 # This function returns the EF of specified pollutant category and fire type.
@@ -60,6 +73,8 @@ def select_ef_pollutant_category(ft, pc):
     
     efcol='AVG_'+ft.replace(' ','_')
     rdf=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+    
+    rdf=rdf.applymap(lambda x: rounding(x))
 
     if pc=='PM optical property':
       return (rdf[['compound',efcol]][rdf['pollutant_category']==pc][rdf[efcol].notna()].reset_index(drop=True))
@@ -93,6 +108,9 @@ def select_compound(ft, com_name,table_name):
         ll=ll.sort_values(by='measurement_type')
         ll=ll[ll[com_name].notna()]
         ll=ll.reset_index(drop=True)
+        
+        ll=ll.applymap(lambda x: rounding(x))
+        
         return ll
 
     except:
@@ -113,19 +131,21 @@ def select_chemical_formula (ft, formula,table_name):
     ll=list(efcoldf['efcol'][efcoldf['fire_type']==ft])
     cols=['mm','formula','compound']+ll
     
-    return df[cols][df['formula']==formula].reset_index(drop=True)
+    fdf=df[cols][df['formula']==formula].reset_index(drop=True)
+    fdf=fdf.applymap(lambda x: rounding(x))
+    return fdf
 
 
 
 def select_compound_rdf (ft, com_name):
     output_db=connect_db('neiva_output_db')
     df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
-    
+    df=df.applymap(lambda x: rounding(x))
     try:
         aa=pcp.get_compounds(com_name, 'name')[0].inchi
         ind=df[df['id']==aa].index[0]
         col='AVG_'+ft.replace(' ','_')
-        df[col]=round(df[col],3)
+        df[col]=df[col]
         return df[['mm','formula','compound',col]][ind:ind+1].reset_index(drop=True)
     except:
         return 'Cannot assign ID. Use chemical formula to search.'
@@ -133,16 +153,12 @@ def select_compound_rdf (ft, com_name):
 def select_chemical_formula_rdf (ft, formula):
     output_db=connect_db('neiva_output_db')
     df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+    df=df.applymap(lambda x: rounding(x))
     
     col='AVG_'+ft.replace(' ','_')
     
     return df[['mm','formula', 'compound',col, 'id']][df['formula']==formula].reset_index(drop=True)
     
-
-
-
-     
-         
 
 def abundant_nmog (ft, chem, aa):
     bk_db=connect_db('backend_db')
@@ -159,6 +175,7 @@ def abundant_nmog (ft, chem, aa):
     rdf=rdf.reset_index(drop=True)
     
     rdf=rdf.merge(pp[['id',chem, aa]], on='id', how='left')
+    rdf=rdf.applymap(lambda x: rounding(x))
     
     return rdf[['mm','formula','compound', efcol, chem, aa, 'id']][:25].reset_index(drop=True)
 
@@ -180,6 +197,7 @@ def nmog_with_high_n (ft, chem, aa):
     rdf=rdf.reset_index(drop=True)
     
     rdf=rdf.merge(pp[['id',chem, aa]], on='id', how='left')
+    rdf=rdf.applymap(lambda x: rounding(x))
     
     return rdf[['mm','formula','compound', efcol, ncol,chem, aa, 'id']][:25].reset_index(drop=True)
 

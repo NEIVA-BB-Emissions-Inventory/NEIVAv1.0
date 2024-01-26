@@ -15,6 +15,8 @@ from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
 from NEIVA.python_scripts.data_integration_process.sort_molec_formula import *
 from NEIVA.python_scripts.tools.join_ef_property_table import *
 
+from NEIVA.python_scripts.tools.number_format_function import *
+
 from sqlalchemy import text
 
 
@@ -28,8 +30,9 @@ def speciation_profile(ft,chem,spc):
   
   df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
   df=df.merge(pp[pp.columns[3:]],on='id', how='left')
-  
+  df = df.applymap(lambda x: rounding(x))
   efcol='AVG_'+ft.replace(' ','_')
+  
   return df[['mm','formula','compound','smile',efcol,chem]][df[chem]==spc][df[efcol].notna()]
 
 
@@ -63,6 +66,8 @@ def GFED_lumped_ef_calc (dd, chem, ft, model_surrogate):
         weighted_mm=(ef*mm).sum()/ef.sum()
         prdf.loc[i,'ef']=totef
         prdf.loc[i,'weighted_mm']=weighted_mm
+    
+    prdf = prdf.applymap(lambda x: rounding(x))
     
     return prdf[[chem,'ef','weighted_mm']][prdf[chem]==model_surrogate]
 
@@ -104,18 +109,18 @@ def weighted_property (dd, ft, chem):
         weighted_hc=(ef*hc).sum()/ef.sum()
         weighted_vp=(ef*vp).sum()/ef.sum()
       
-        prdf.loc[i,'ef']=round(totef,3)
-        prdf.loc[i,'mole']=round(totmole,3)
-        prdf.loc[i,'mm']=round(weighted_mm,3)
+        prdf.loc[i,'ef']=totef
+        prdf.loc[i,'mole']=totmole
+        prdf.loc[i,'mm']=weighted_mm
         prdf.loc[i,'kOH']=weighted_koh
-        prdf.loc[i,'cstar']=round(weighted_cstar,3)
-        prdf.loc[i,'vp']=round(weighted_vp,3)
+        prdf.loc[i,'cstar']=weighted_cstar
+        prdf.loc[i,'vp']=weighted_vp
         prdf.loc[i,'hc']=weighted_hc
         
-    prdf['mole_fraction']=round(prdf['mole']/prdf['mole'].sum(),2)
+    prdf['mole_fraction']=prdf['mole']/prdf['mole'].sum()
     prdf=prdf.sort_values(by='mole_fraction', ascending=False)
-    prdf=prdf.reset_index(drop=True)
-     
+    prdf=prdf.reset_index(drop=True)    
+    prdf = prdf.applymap(lambda x: rounding(x))
     return prdf
 
 def nmog_with_high_ohr (dd, ft, totvoc, chem):
@@ -137,6 +142,7 @@ def nmog_with_high_ohr (dd, ft, totvoc, chem):
     
     nmog=nmog.sort_values(by='ohr', ascending=False)
     nmog=nmog.reset_index(drop=True)
+    nmog = nmog.applymap(lambda x: rounding(x))
     return nmog[['mm','formula','compound',efcol, 'ohr', 'kOH', 'S07']][:25]
     
 
