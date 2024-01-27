@@ -118,7 +118,7 @@ def Get_fc_calc(fc,df):
                 df.loc[lumpind,'STD_'+col.split('AVG_')[1]]=0
     return df
 
-def fc_calc(df):
+def assign_fractional_contribution (df):
     '''
     Calculates fractional contribution (FC) values based on two fractional contribution datasets.
     Updates the 'df' DataFrame with FC values.

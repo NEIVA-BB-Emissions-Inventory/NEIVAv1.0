@@ -298,7 +298,7 @@ def compare_lab_field (ft, com_name,table_name):
         n_field=len(ll[com_name][ll['measurement_type']=='field'])
         
         data = {
-            'label': [com_name.capitalize()+' EF mean', 'MCE mean', 'data count'],
+            'Mean': [com_name.capitalize()+' EF', 'MCE', 'data count'],
             'Lab': [lab_avg, mce_lab, n_lab],
             'Field': [field_avg,mce_field,n_field]
              }          
