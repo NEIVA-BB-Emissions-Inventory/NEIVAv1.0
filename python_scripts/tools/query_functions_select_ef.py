@@ -17,11 +17,48 @@ from NEIVA.python_scripts.data_integration_process.sort_molec_formula import *
 from NEIVA.python_scripts.tools.number_format_function import *
 from NEIVA.python_scripts.tools.join_ef_property_table import *
 
-from NEIVA.python_scripts.tools.query_functions_plot import get_ind
+#from NEIVA.python_scripts.tools.query_functions_plot import get_ind
 
 
 from sqlalchemy import text
 
+def get_ind (df, compound):
+      if compound == 'PM<2.5':
+          ind=list(df[df['pollutant_category']=='PM total'][df['compound'].str.contains('PM')].index)
+          return ind
+      if compound == 'BC':
+          ind=list(df[df['id']=='BC'].index)
+          return ind
+      if compound == 'OC':
+          ind=list(df[df['id']=='OC'].index)
+          return ind
+      if compound == 'NOx_as_NO':
+          ind=list(df[df['id']=='NOx_as_NO'].index)
+          return ind
+
+      else:
+          iid=pcp.get_compounds(compound, 'name')[0].inchi
+          ind=list(df[df['id']==iid].index)
+          return ind
+
+def get_ind_rdf (df, compound):
+      if compound == 'PM<2.5':
+          ind=list(df[df['id']=='PM<2.5'].index)
+          return ind
+      if compound == 'BC':
+          ind=list(df[df['id']=='BC'].index)
+          return ind
+      if compound == 'OC':
+          ind=list(df[df['id']=='OC'].index)
+          return ind
+      if compound == 'NOx_as_NO':
+          ind=list(df[df['id']=='NOx_as_NO'].index)
+          return ind
+
+      else:
+          iid=pcp.get_compounds(compound, 'name')[0].inchi
+          ind=list(df[df['id']==iid].index)
+          return ind
 
 # This function returns the PM2.5, OC, BC data for a specified fire type and table name. The table name inlcudes three different tables
 # integrated ef, processed ef, recommended ef.
@@ -106,18 +143,13 @@ def select_compound(ft, com_name,table_name):
         
         efcol=list(efcoldf['efcol'])
 
-        efcoldf[com_name]=df[efcol].iloc[ind].values
-        efcoldf[com_name]=round(efcoldf[com_name],3)
-    
+        efcoldf[com_name]=df[efcol][df.index.isin(ind)].mean().values
         ll=efcoldf[allcol][efcoldf['fire_type']==ft]
         ll=ll.sort_values(by='measurement_type')
         ll=ll[ll[com_name].notna()]
         ll=ll.reset_index(drop=True)
-        
         ll=ll.applymap(lambda x: rounding(x))
-        
         return ll
-
     except:
         return 'Cannot assin ID. Search by formula'
 
@@ -147,8 +179,7 @@ def select_compound_rdf (ft, com_name):
     df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
     df=df.applymap(lambda x: rounding(x))
     try:
-        aa=pcp.get_compounds(com_name, 'name')[0].inchi
-        ind=df[df['id']==aa].index[0]
+        ind=get_ind_rdf (df,com_name)[0]
         col='AVG_'+ft.replace(' ','_')
         df[col]=df[col]
         return df[['mm','formula','compound',col]][ind:ind+1].reset_index(drop=True)
@@ -241,14 +272,14 @@ def compare_lab_field (ft, com_name,table_name):
         df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
         efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
     try:
-        ind = get_ind (df, com_name)
+        iind = get_ind (df, com_name)
         
         co_ind=df[df['id']=='InChI=1S/CO/c1-2'].index[0]
         co2_ind=df[df['id']=='InChI=1S/CO2/c2-1-3'].index[0]
         
         efcol=list(efcoldf['efcol'])
 
-        efcoldf[com_name]=df[efcol].iloc[ind].values
+        efcoldf[com_name]=df[efcol][df.index.isin(iind)].mean().values
         efcoldf['co']=df[efcol].iloc[co_ind].values
         efcoldf['co2']=df[efcol].iloc[co2_ind].values
         
