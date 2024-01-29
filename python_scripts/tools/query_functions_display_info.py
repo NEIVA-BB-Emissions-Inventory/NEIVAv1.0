@@ -16,9 +16,8 @@ from sqlalchemy import text
 
 def fire_type():
     bk_db=connect_db('backend_db')
-    dd=pd.read_sql(text('select * from bkdb_info_table_name'), con=bk_db)
-    ll=list(dd['fire_type'].unique())
-    return ll
+    dd=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
+    return list(dd['fire_type'].unique())
 
 def table_info (database, fire_type):
     bk_db=connect_db('backend_db')
