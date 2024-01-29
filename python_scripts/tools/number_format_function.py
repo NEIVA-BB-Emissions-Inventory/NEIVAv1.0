@@ -13,7 +13,7 @@ def rounding(n):
         return str(n)
     elif n==0:
         return str(0)
-    elif ((abs(n)>=1e-3) and (abs(n)<=1e4)):
+    elif ((abs(n)>=1e-2) and (abs(n)<=1e4)):
         sgn = '-' if n<0 else ''
         num = format(abs(n) - int(abs(n)),'f')
         if int(num[2:])<1:
