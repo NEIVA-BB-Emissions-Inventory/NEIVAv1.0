@@ -183,40 +183,46 @@ def select_chemical_formula (ft, formula,table_name):
     if table_name=='integrated ef':
         df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
         efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
-
+        ll=list(efcoldf['efcol'][efcoldf['fire_type']==ft])
+        cols=['mm','formula','compound']+ll
+        fdf=df[cols][df['formula']==formula].reset_index(drop=True)
+        fdf=fdf.applymap(lambda x: rounding(x))
+        return fdf
     if table_name=='processed ef':
         df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
         efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
-    
-    ll=list(efcoldf['efcol'][efcoldf['fire_type']==ft])
-    cols=['mm','formula','compound']+ll
-    
-    fdf=df[cols][df['formula']==formula].reset_index(drop=True)
-    fdf=fdf.applymap(lambda x: rounding(x))
-    return fdf
-
-
-
-def select_compound_rdf (ft, com_name):
-    output_db=connect_db('neiva_output_db')
-    df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
-    df=df.applymap(lambda x: rounding(x))
-    try:
-        ind=get_ind_rdf (df,com_name)[0]
+        ll=list(efcoldf['efcol'][efcoldf['fire_type']==ft])
+        cols=['mm','formula','compound']+ll
+        fdf=df[cols][df['formula']==formula].reset_index(drop=True)
+        fdf=fdf.applymap(lambda x: rounding(x))
+        return fdf
+    if table_name=='recommended ef':
+        output_db=connect_db('neiva_output_db')
+        df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+        df=df.applymap(lambda x: rounding(x))
         col='AVG_'+ft.replace(' ','_')
-        df[col]=df[col]
-        return df[['mm','formula','compound',col]][ind:ind+1].reset_index(drop=True)
-    except:
-        return 'Compound not found. Search by formula'
+        return df[['mm','formula', 'compound',col, 'id']][df['formula']==formula].reset_index(drop=True)
 
-def select_chemical_formula_rdf (ft, formula):
-    output_db=connect_db('neiva_output_db')
-    df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
-    df=df.applymap(lambda x: rounding(x))
+# def select_compound_rdf (ft, com_name):
+#     output_db=connect_db('neiva_output_db')
+#     df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+#     df=df.applymap(lambda x: rounding(x))
+#     try:
+#         ind=get_ind_rdf (df,com_name)[0]
+#         col='AVG_'+ft.replace(' ','_')
+#         df[col]=df[col]
+#         return df[['mm','formula','compound',col]][ind:ind+1].reset_index(drop=True)
+#     except:
+#         return 'Compound not found. Search by formula'
+
+# def select_chemical_formula_rdf (ft, formula):
+#     output_db=connect_db('neiva_output_db')
+#     df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+#     df=df.applymap(lambda x: rounding(x))
     
-    col='AVG_'+ft.replace(' ','_')
+#     col='AVG_'+ft.replace(' ','_')
     
-    return df[['mm','formula', 'compound',col, 'id']][df['formula']==formula].reset_index(drop=True)
+#     return df[['mm','formula', 'compound',col, 'id']][df['formula']==formula].reset_index(drop=True)
     
 
 def abundant_nmog (ft, chem, aa):
@@ -263,7 +269,6 @@ def nmog_with_high_n (ft, chem, aa):
 def ef_sorted_by_property (dd, ft, chem, model_surrogate, pr):
     output_db=connect_db('neiva_output_db')
     bk_db=connect_db('backend_db')
-    
     nmog=join_ef_property(dd)
     # Set EF column based on the input parameter 'fire type'
     avgcol='AVG_'+ft.replace(' ','_')
@@ -273,14 +278,11 @@ def ef_sorted_by_property (dd, ft, chem, model_surrogate, pr):
     nmog=nmog[nmog['ef'].notna()].reset_index(drop=True)
     nmog['mole']=nmog['ef']/nmog['mm']
     nmog['mole_frac']=nmog['mole']/nmog['mole'].sum()
-    
     nmog=nmog[nmog[chem]==model_surrogate]
     nmog=nmog.sort_values(by=pr, ascending=False)
     nmog=nmog.reset_index(drop=True)
-        
     nmog=nmog.applymap(lambda x: rounding(x))
     nmog=nmog[['mm','formula','compound',avgcol,ncol,stdcol, chem, pr]]
-
     return nmog
     
 def compare_lab_field (ft, com_name,table_name):

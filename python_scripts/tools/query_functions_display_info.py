@@ -14,6 +14,11 @@ from NEIVA.python_scripts.connect_with_mysql import*
 from sqlalchemy import text
 
 
+def fire_type():
+    bk_db=connect_db('backend_db')
+    dd=pd.read_sql(text('select * from bkdb_info_table_name'), con=bk_db)
+    ll=list(dd['fire_type'].unique())
+    return ll
 
 def table_info (database, fire_type):
     bk_db=connect_db('backend_db')
@@ -53,6 +58,5 @@ def property_variables ():
 def model_surrogates(chem):
    bk_db=connect_db('backend_db')
    output_db=connect_db('neiva_output_db')
-
    pp=pd.read_sql(text('select * from Property_Surrogate'), con=output_db)
    return list(pp[chem].unique())
