@@ -50,7 +50,7 @@ def prepare_legend(fdf):
       
   return fdf
 
-def plot_ef(compound,ft, table_name):
+def plot_ef(ft, compound, table_name):
     bk_db=connect_db('backend_db')
     output_db=connect_db('neiva_output_db')
               
@@ -230,7 +230,7 @@ def boxplot_abundant_nmog (ft):
     
     return 
 
-def boxplot_ef (compound, ft, table_name):
+def boxplot_ef (ft, compound, table_name):
     bk_db=connect_db('backend_db')
     output_db=connect_db('neiva_output_db')
               

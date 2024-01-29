@@ -127,31 +127,54 @@ def select_ef_pollutant_category(ft, pc):
 def select_compound(ft, com_name,table_name):
     bk_db=connect_db('backend_db')
     output_db=connect_db('neiva_output_db')
-
     if table_name=='integrated ef':
         df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
         efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
         allcol= ['legend','fuel_type','measurement_type','MCE',com_name]
-
+        try:
+                ind = get_ind (df, com_name)
+                
+                efcol=list(efcoldf['efcol'])
+        
+                efcoldf[com_name]=df[efcol][df.index.isin(ind)].mean().values
+                ll=efcoldf[allcol][efcoldf['fire_type']==ft]
+                ll=ll.sort_values(by='measurement_type')
+                ll=ll[ll[com_name].notna()]
+                ll=ll.reset_index(drop=True)
+                ll=ll.applymap(lambda x: rounding(x))
+                return ll
+        except:
+                return 'Compound not found. Search by formula'
     if table_name=='processed ef':
         df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
         efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
         allcol= ['legend','measurement_type',com_name]
 
-    try:
-        ind = get_ind (df, com_name)
-        
-        efcol=list(efcoldf['efcol'])
+        try:
+            ind = get_ind (df, com_name)
+            
+            efcol=list(efcoldf['efcol'])
+    
+            efcoldf[com_name]=df[efcol][df.index.isin(ind)].mean().values
+            ll=efcoldf[allcol][efcoldf['fire_type']==ft]
+            ll=ll.sort_values(by='measurement_type')
+            ll=ll[ll[com_name].notna()]
+            ll=ll.reset_index(drop=True)
+            ll=ll.applymap(lambda x: rounding(x))
+            return ll
+        except:
+            return 'Compound not found. Search by formula'
+    if table_name=='recommended ef':
+        df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+        df=df.applymap(lambda x: rounding(x))
+        try:
+            ind=get_ind_rdf (df,com_name)[0]
+            col='AVG_'+ft.replace(' ','_')
+            df[col]=df[col]
+            return df[['mm','formula','compound',col]][ind:ind+1].reset_index(drop=True)
+        except:
+            return 'Compound not found. Search by formula'
 
-        efcoldf[com_name]=df[efcol][df.index.isin(ind)].mean().values
-        ll=efcoldf[allcol][efcoldf['fire_type']==ft]
-        ll=ll.sort_values(by='measurement_type')
-        ll=ll[ll[com_name].notna()]
-        ll=ll.reset_index(drop=True)
-        ll=ll.applymap(lambda x: rounding(x))
-        return ll
-    except:
-        return 'Cannot assin ID. Search by formula'
 
 def select_chemical_formula (ft, formula,table_name):
     bk_db=connect_db('backend_db')
@@ -184,7 +207,7 @@ def select_compound_rdf (ft, com_name):
         df[col]=df[col]
         return df[['mm','formula','compound',col]][ind:ind+1].reset_index(drop=True)
     except:
-        return 'Cannot assign ID. Use chemical formula to search.'
+        return 'Compound not found. Search by formula'
 
 def select_chemical_formula_rdf (ft, formula):
     output_db=connect_db('neiva_output_db')
@@ -306,7 +329,7 @@ def compare_lab_field (ft, com_name,table_name):
         df=df.applymap(lambda x: rounding(x))
         return df
     except:
-        return 'Cannot assin ID. Search by formula'
+        return 'Compound not found. Search by formula'
 
     
 

@@ -20,7 +20,7 @@ from sqlalchemy import text
 import matplotlib.pyplot as plt
 
 
-def calc_OHR (dd,chem, tot_voc, ft):
+def calc_OHR (dd,chem,ft, tot_voc):
     output_db=connect_db('neiva_output_db')
     bk_db=connect_db('backend_db')
     

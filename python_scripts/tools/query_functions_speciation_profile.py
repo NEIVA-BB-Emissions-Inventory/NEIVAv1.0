@@ -36,7 +36,7 @@ def speciation_profile(ft,chem,spc):
   return df[['mm','formula','compound','smile',efcol,chem]][df[chem]==spc][df[efcol].notna()]
 
 
-def GFED_lumped_ef_calc (dd, chem, ft, model_surrogate):
+def GFED_lumped_ef_calc (dd, ft, chem, model_surrogate):
     output_db=connect_db('neiva_output_db')
     bk_db=connect_db('backend_db')
     
@@ -123,7 +123,7 @@ def weighted_property (dd, ft, chem):
     prdf = prdf.applymap(lambda x: rounding(x))
     return prdf
 
-def nmog_with_high_ohr (dd, ft, totvoc, chem):
+def nmog_with_high_ohr (dd, ft, chem, totvoc):
     output_db=connect_db('neiva_output_db')
     bk_db=connect_db('backend_db')
     
@@ -143,6 +143,6 @@ def nmog_with_high_ohr (dd, ft, totvoc, chem):
     nmog=nmog.sort_values(by='ohr', ascending=False)
     nmog=nmog.reset_index(drop=True)
     nmog = nmog.applymap(lambda x: rounding(x))
-    return nmog[['mm','formula','compound',efcol, 'ohr', 'kOH', 'S07']][:25]
+    return nmog[['mm','formula','compound',efcol, 'ohr', 'kOH', chem]][:25]
     
 
