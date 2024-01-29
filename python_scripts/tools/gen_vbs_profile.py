@@ -38,6 +38,7 @@ def calc_VBS (dd, ft):
     
     fdf=pd.DataFrame()
     fdf['bin']=aa.index
+    fdf['ef/sum_ef']=aa
     fdf['ef/sum_ef']=fdf['ef/sum_ef'].map(lambda x:rounding(x))
     return fdf
 
