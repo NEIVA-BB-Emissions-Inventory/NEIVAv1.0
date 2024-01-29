@@ -100,7 +100,7 @@ def plot_ef(ft, compound, table_name):
         plt.legend(fontsize=10)
         plt.tight_layout()
     except:
-         return 'Cannot assign ID. Use chemical formula to search.'
+         return 'Compound not found. Use chemical formula to search.'
     return
      
 def mce_vs_ef (compound, ft):
@@ -167,7 +167,7 @@ def mce_vs_ef (compound, ft):
         plt.legend(fontsize=11, frameon=False)
         plt.tight_layout()
     except:
-         return 'Cannot assign ID. Use chemical formula to search.'
+         return 'Compound not found. Use chemical formula to search.'
     return
          
 def boxplot_abundant_nmog (ft):
@@ -273,7 +273,7 @@ def boxplot_ef (ft, compound, table_name):
         #plt.legend(fontsize=10)
         plt.tight_layout()
     except:
-         return 'Cannot assign ID. Use chemical formula to search.'
+         return 'Compound not found. Use chemical formula to search.'
     
     return
 

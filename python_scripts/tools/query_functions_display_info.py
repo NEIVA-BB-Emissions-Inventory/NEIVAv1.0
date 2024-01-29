@@ -13,7 +13,6 @@ import matplotlib.pyplot as plt
 from NEIVA.python_scripts.connect_with_mysql import*
 from sqlalchemy import text
 
-
 def fire_type():
     bk_db=connect_db('backend_db')
     dd=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
