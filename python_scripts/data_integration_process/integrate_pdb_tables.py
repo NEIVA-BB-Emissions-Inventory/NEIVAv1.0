@@ -66,7 +66,7 @@ def integrate_tables():
     assert len(df[df['id'].duplicated()]) == 0
     assert len(df)==len(df[df.columns[df.columns.str.contains('EF',na=False)]].dropna(how='all'))
     
-    df=OrderFormula(df)
+    df=order_formula(df)
     df=nominal_mm_calulator(df)
     
     t=create_PrettyTable_col2(['Check','Output'],['Duplicate IDs','Row with all NaNs','formula column'],['Clear','Clear','Cleaned'])

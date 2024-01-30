@@ -148,7 +148,7 @@ def select_compound(ft, com_name,table_name):
     if table_name=='processed ef':
         df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
         efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
-        allcol= ['legend','measurement_type',com_name]
+        allcol= ['legend','fuel_type','measurement_type','MCE',com_name]
 
         try:
             ind = get_ind (df, com_name)

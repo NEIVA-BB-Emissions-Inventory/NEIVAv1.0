@@ -200,7 +200,7 @@ def fix_seq_formula(formula,unique_molecule_list):
                 
     return ''.join(list(df['package']))
                 
-def OrderFormula(data):
+def order_formula(data):
     '''
     Re-orders and corrects molecular formulas in the input data.
 
