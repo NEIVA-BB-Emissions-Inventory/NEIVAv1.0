@@ -12,6 +12,7 @@ import pubchempy as pcp
 import matplotlib.pyplot as plt
 from NEIVA.python_scripts.connect_with_mysql import*
 from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
+from NEIVA.python_scripts.tools.assign_geos_chem import geos_chem_species
 from NEIVA.python_scripts.data_integration_process.sort_molec_formula import *
 from NEIVA.python_scripts.tools.join_ef_property_table import *
 
@@ -19,7 +20,7 @@ from sqlalchemy import text
 
 def get_ind (df, compound):
       if compound == 'PM<2.5':
-          ind=list(df[df['pollutant_category']=='PM total'][df['compound'].str.contains('PM')].index)
+          ind=list(df[df['pollutant_category']=='PM total'][df['compound'].str.contains('PM')][df['id']!='PM10'].index)
           return ind
       if compound == 'BC':
           ind=list(df[df['id']=='BC'].index)
@@ -245,7 +246,7 @@ def boxplot_ef (ft, compound, table_name):
     try:
         iind=get_ind (df, compound)
         efcol=efcoldf['efcol'][efcoldf['fire_type']==ft]
-        aa=df[efcol][df.index.isin(iind)].T.dropna()
+        aa=df[efcol][df.index.isin(iind)].mean().dropna().values
         vals=aa[aa.columns[0]].values   
 
         import seaborn as sns

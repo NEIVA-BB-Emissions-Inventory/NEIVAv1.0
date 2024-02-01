@@ -12,10 +12,9 @@ import pubchempy as pcp
 import matplotlib.pyplot as plt
 from NEIVA.python_scripts.connect_with_mysql import*
 from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
+from NEIVA.python_scripts.tools.assign_geos_chem import geos_chem_species
 from NEIVA.python_scripts.data_integration_process.sort_molec_formula import *
-
 from sqlalchemy import text
-
 
 def join_ef_property (dd):
     output_db=connect_db('neiva_output_db')
@@ -38,6 +37,8 @@ def join_ef_property (dd):
     
     nmog=nmog.merge(tt_f, on='id', how='left')
     nmog=mozart_species(nmog)
+    nmog=geos_chem_species(nmog)
+   
     return nmog
 
 def assign_GFED_lumed_ef_conv_factor (nmog):

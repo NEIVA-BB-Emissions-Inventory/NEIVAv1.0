@@ -105,7 +105,7 @@ def calculate_average_fire_types(df,efcoldf):
     # Calculate PM<2.5 values and replace PM2.5 with PM<2.5.
     
     avgcol=GrpCol(avgdf)[4]
-    pmvals=avgdf[avgcol][avgdf['pollutant_category']=='PM total'][avgdf['compound'].str.contains('PM',na=False)].mean().values.tolist()
+    pmvals=avgdf[avgcol][avgdf['pollutant_category']=='PM total'][avgdf['compound'].str.contains('PM',na=False)][avgdf['id']!='PM10'].mean().values.tolist()
     pmind=avgdf[avgdf['id']=='PM2.5'].index[0]
     avgdf.loc[pmind,'compound']='PM<2.5'
     avgdf.loc[pmind,'id']='PM<2.5'
@@ -115,7 +115,7 @@ def calculate_average_fire_types(df,efcoldf):
         avgdf.loc[pmind,avgcol[i]]=pmvals[i]
     
     # Remove rows with total PM and reset the index.    
-    total_pm_ind=set(avgdf[avgdf['pollutant_category']=='PM total'][avgdf['compound'].str.contains('PM',na=False)].index)-{pmind}
+    total_pm_ind=set(avgdf[avgdf['pollutant_category']=='PM total'][avgdf['compound'].str.contains('PM',na=False)][avgdf['id']!='PM10'].index)-{pmind}
     
     avgdf=avgdf.drop(index=total_pm_ind)
     avgdf=avgdf.reset_index(drop=True)

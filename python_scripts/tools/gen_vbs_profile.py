@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 from NEIVA.python_scripts.connect_with_mysql import*
 from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
+from NEIVA.python_scripts.tools.assign_geos_chem import geos_chem_species
 from NEIVA.python_scripts.tools.join_ef_property_table import *
 from NEIVA.python_scripts.tools.number_format_function import *
 
