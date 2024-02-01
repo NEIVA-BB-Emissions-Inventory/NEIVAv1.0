@@ -33,3 +33,7 @@ from NEIVA.python_scripts.tools.query_functions_plot import *
 from NEIVA.python_scripts.tools.join_ef_property_table import *
 from NEIVA.python_scripts.tools.number_format_function import *
 
+from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
+from NEIVA.python_scripts.tools.assign_geos_chem_species import geos_chem_species
+
+
