@@ -157,9 +157,7 @@ def select_compound(ft, com_name,table_name):
         allcol= ['legend','fuel_type','measurement_type','MCE',com_name]
         try:
                 ind = get_ind (df, com_name)
-                
                 efcol=list(efcoldf['efcol'])
-        
                 efcoldf[com_name]=df[efcol][df.index.isin(ind)].mean().values
                 ll=efcoldf[allcol][efcoldf['fire_type']==ft]
                 ll=ll.sort_values(by='measurement_type')
@@ -237,6 +235,7 @@ def select_compound(ft, com_name,table_name):
                     rdf['EF']=dd[efcol].iloc[ind].mean().values
                     rdf['db']=['legacy db']*len(efcol)
                     fdf=pd.concat([fdf,rdf])
+            fdf=fdf[fdf['EF'].notna()].reset_index(drop=True)
             fdf=fdf.applymap(lambda x: rounding(x))
             return fdf
         except:
@@ -305,8 +304,6 @@ def select_compound(ft, com_name,table_name):
             return df[['mm','formula','compound',col]][ind:ind+1].reset_index(drop=True)
         except:
             return 'Compound not found. Search by formula'
-
-
 def select_chemical_formula (ft, formula,table_name):
     bk_db=connect_db('backend_db')
     output_db=connect_db('neiva_output_db')
