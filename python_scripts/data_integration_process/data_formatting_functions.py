@@ -156,3 +156,19 @@ def str_float(df, col):
                 df.loc[i,col]=float(df[col].iloc[i])
     return df
 
+def merge_pm(mdf):
+    ind=list(mdf[mdf['pollutant_category']=='PM total']\
+        [mdf['compound'].str.contains('PM')]\
+        [~mdf['id'].isin(['PM10','PM2.5_npb','PM2.5_pb','PM2.5_ipcc'])].index)
+        
+    efcol=list(mdf.columns[mdf.columns.str.contains('EF')])
+    vals=list(mdf[efcol][mdf.index.isin(ind)].mean().values)
+    pmind=mdf[mdf['id']=='PM2.5'].index[0]
+    for i in range(len(efcol)):
+        mdf.loc[pmind,efcol[i]]=vals[i]
+    
+    dropind=set(ind)-{pmind}
+    mdf=mdf.drop(index=dropind)
+    mdf=mdf.reset_index(drop=True)
+    return mdf
+

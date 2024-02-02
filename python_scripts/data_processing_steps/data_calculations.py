@@ -105,7 +105,7 @@ def calculate_average_fire_types(df,efcoldf):
     # Calculate PM<2.5 values and replace PM2.5 with PM<2.5.
     
     avgcol=GrpCol(avgdf)[4]
-    pmvals=avgdf[avgcol][avgdf['pollutant_category']=='PM total'][avgdf['compound'].str.contains('PM',na=False)][avgdf['id']!='PM10'].mean().values.tolist()
+    pmvals=avgdf[avgcol][avgdf['pollutant_category']=='PM total'][avgdf['compound'].str.contains('PM',na=False)][avgdf['id']!='PM10'][avgdf['id']!='PM2.5_ipcc'].mean().values.tolist()
     pmind=avgdf[avgdf['id']=='PM2.5'].index[0]
     avgdf.loc[pmind,'compound']='PM<2.5'
     avgdf.loc[pmind,'id']='PM<2.5'

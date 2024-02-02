@@ -194,7 +194,10 @@ def lab_data_adjust_to_field_conditions (df,efcoldf):
             cor.columns = [new_col]
             
             df=df.merge(cor, right_index=True, left_index=True, how='left')
-          
+            
+            iind=list(df[df[l].notna()][df[new_col].isnull()].index)
+            for xx in iind:
+                df.loc[xx,new_col]=df[l].iloc[xx]
             # Changing col name in df and efcoldf    
             df=df.drop(columns=l)
             alt_ind=efcoldf[efcoldf['efcol']==l].index

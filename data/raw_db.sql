@@ -11,6 +11,43 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `pdb_goetz18`
+--
+
+DROP TABLE IF EXISTS `pdb_goetz18`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `pdb_goetz18` (
+  `mm` double DEFAULT NULL,
+  `formula` text,
+  `compound` text,
+  `pollutant_category` text,
+  `EF_1_pot_traditional_mudstove_dung_goetz18` double DEFAULT NULL,
+  `EF_1_pot_traditional_mudstove_hardwood_goetz18` double DEFAULT NULL,
+  `EF_1_pot_traditional_mudstove_sticks_twings_goetz18` double DEFAULT NULL,
+  `EF_2_pot_traditional_mudstove_dung_hardwood_goetz18` double DEFAULT NULL,
+  `EF_crop_residue_mixed_residue_goetz18` double DEFAULT NULL,
+  `EF_crop_residue_wheat_straw_goetz18` double DEFAULT NULL,
+  `EF_crop_residue_mustard_goetz18` double DEFAULT NULL,
+  `EF_crop_residue_grass_goetz18` double DEFAULT NULL,
+  `EF_open_garbage_burning_mixed_fuel_goetz18` double DEFAULT NULL,
+  `EF_garbage_burning_mixed_plastic_goetz18` double DEFAULT NULL,
+  `EF_garbage_burning_chip_bags_goetz18` double DEFAULT NULL,
+  `id` text
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pdb_goetz18`
+--
+
+LOCK TABLES `pdb_goetz18` WRITE;
+/*!40000 ALTER TABLE `pdb_goetz18` DISABLE KEYS */;
+INSERT INTO `pdb_goetz18` VALUES (NULL,NULL,'PM1','PM total',1.787,2.715,2.363,4.095,3.436,4.547,4.177,2.686,3.991,19.836,5.804,'PM1'),(NULL,NULL,'OA','PM carbon',1.315,2.37,1.794,3.303,2.641,3.339,3.217,1.817,1.998,16.59,3.484,'OA'),(NULL,NULL,'BC','PM carbon',0.086,0.208,0.521,0.161,0.41,0.639,0.599,0.283,NULL,NULL,NULL,'BC'),(96.07,'O4S-2','Sulphate','PM ion',0.008,0.016,0.009,0.018,0.019,0.051,0.111,NULL,NULL,0.015,0.003,'InChI=1S/H2O4S/c1-5(2,3)4/h(H2,1,2,3,4)/p-2'),(62.005,'NO3-','Nitrate','PM ion',0.003,NULL,0.004,0.005,0.008,0.01,0.021,0.003,0.002,NULL,NULL,'InChI=1S/NO3/c2-1(3)4/q-1'),(70.9,'Cl2','Chlorine','PM ion',0.27,0.121,0.035,0.501,0.358,0.446,0.269,0.528,0.066,0.502,0.021,'InChI=1S/Cl2/c1-2'),(18.039,'H4N+','Ammonium','PM ion',0.069,NULL,NULL,0.107,NULL,0.062,NULL,0.055,NULL,NULL,NULL,'InChI=1S/H3N/h1H3/p+1'),(NULL,NULL,'PAH','PM ion',0.005,0.012,0.025,0.02,0.006,0.009,0.004,0.005,0.003,0.023,0.005,'PAH'),(NULL,NULL,'EF Babs 370 (m2/kg)','PM ion',16.385,19.245,24.652,13.824,21.219,21.14,35.462,17.254,32.015,NULL,NULL,'Babs_370'),(NULL,NULL,'EF Babs 880 (m2/kg)','PM ion',0.659,1.619,4.045,1.251,3.189,4.962,4.345,2.201,11.11,NULL,NULL,'Babs_880');
+/*!40000 ALTER TABLE `pdb_goetz18` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `rdb_bf_hayden22`
 --
 
@@ -23,7 +60,7 @@ CREATE TABLE `rdb_bf_hayden22` (
   `compound` text,
   `pollutant_category` text,
   `instrument` text,
-  `EF` text,
+  `EF_boreal_forest` text,
   `STD` text,
   `id` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -61,7 +98,7 @@ CREATE TABLE `rdb_coffey17` (
   `EF_Mean_philip.1` text,
   `EF_Median_philip.1` text,
   `COV_philip` text,
-  `EF_Mean__coalpot` text,
+  `EF_Mean_coalpot` text,
   `EF_Median_coalpot` text,
   `COV_coalpot` text,
   `id` text
@@ -142,7 +179,7 @@ DROP TABLE IF EXISTS `rdb_cr_lasko18`;
 CREATE TABLE `rdb_cr_lasko18` (
   `compound` text,
   `pollutant_category` text,
-  `EF` double DEFAULT NULL,
+  `EF_crop_residue` double DEFAULT NULL,
   `UNC` double DEFAULT NULL,
   `reference` text,
   `id` text
@@ -356,10 +393,10 @@ CREATE TABLE `rdb_hatch17` (
   `formula` text,
   `compound` text,
   `pollutant_category` text,
-  `peat` double DEFAULT NULL,
-  `rice_straw` double DEFAULT NULL,
-  `blackspruce` double DEFAULT NULL,
-  `ponderosa_pine` double DEFAULT NULL,
+  `EF_peat` double DEFAULT NULL,
+  `EF_rice_straw` double DEFAULT NULL,
+  `EF_blackspruce` double DEFAULT NULL,
+  `EF_ponderosa_pine` double DEFAULT NULL,
   `id` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -565,7 +602,7 @@ CREATE TABLE `rdb_may14` (
   `EF_turtle_fire` text,
   `EF_montane_lab_average` text,
   `STD_montane_lab_average` text,
-  `EF_montane_aircraft_average` text,
+  `EF_montane_aircraft` text,
   `STD_montane_aircraft_average` text,
   `EF_gallberry_burn_14` text,
   `EF_gallberry_burn_47` text,
@@ -624,7 +661,7 @@ CREATE TABLE `rdb_p_jayarathne18` (
   `compound` text,
   `pollutant_category` text,
   `unit` text,
-  `AVG` text,
+  `EF_peat` text,
   `STD` double DEFAULT NULL,
   `id` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -650,7 +687,7 @@ DROP TABLE IF EXISTS `rdb_p_roulston18`;
 CREATE TABLE `rdb_p_roulston18` (
   `compound` text,
   `pollutant_category` text,
-  `AVG_tropical_peat` double DEFAULT NULL,
+  `EF_tropical_peat` double DEFAULT NULL,
   `STD_tropical_peat` double DEFAULT NULL,
   `id` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -1553,4 +1590,4 @@ UNLOCK TABLES;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-01-31 18:05:49
+-- Dump completed on 2024-02-01 22:51:45
