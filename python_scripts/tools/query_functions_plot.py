@@ -48,15 +48,12 @@ def get_ind (df, compound):
 def prepare_legend(fdf):
   for i in range(len(fdf)):
       fdf.loc[i,'legend']=fdf['study'].iloc[i]
-      
   ii=list(fdf[fdf['fuel_type'].notna()].index)
   ii2=list(fdf[fdf['cookstove_name'].notna()].index)
-  
   for i in ii:
-      fdf.loc[i,'legend']=fdf['study'].iloc[i]+'\n'+fdf['fuel_type'].iloc[i]
+      fdf.loc[i,'legend']=fdf['study'].iloc[i]+'\n'+'('+fdf['fuel_type'].iloc[i]+')'
   for i in ii2:
-      fdf.loc[i,'legend']=fdf['study'].iloc[i]+'\n'+fdf['fuel_type'].iloc[i]+'\n'+fdf['cookstove_name'].iloc[i]
-      
+      fdf.loc[i,'legend']=fdf['study'].iloc[i]+'\n'+'('+fdf['fuel_type'].iloc[i]+'\n'+fdf['cookstove_name'].iloc[i]+')'
   return fdf
 
 def plot_ef(ft, compound, table_name):

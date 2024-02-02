@@ -98,11 +98,10 @@ def select_pm_data (ft, table_name):
             fdf=efcoldf[['legend','MCE','PM2.5','PM10','PM2.5(non-pile burning)','PM2.5(pile-burning)','OC','BC','OA', 'EC']][efcoldf['fire_type']==ft].reset_index(drop=True)
             fdf=fdf.applymap(lambda x: rounding(x))
             return fdf
-        else:
+        if ft!='crop residue':
             fdf=efcoldf[['legend','MCE','PM2.5','PM10','OA','OC','BC','EC']][efcoldf['fire_type']==ft].reset_index(drop=True)
             fdf=fdf.applymap(lambda x: rounding(x))
             return fdf
-        return
     if table_name=='processed ef':
         efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
         df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
@@ -111,28 +110,25 @@ def select_pm_data (ft, table_name):
         efcoldf['BC']=df[efcol][df['id']=='BC'].values[0]
         efcoldf['OC']=df[efcol][df['id']=='OC'].values[0]
         efcoldf['PM2.5']=df[efcol][df['id']=='PM2.5'].values[0]
-        efcoldf['PM10']=df[efcol][df['id']=='PM2.5'].values[0]
-        efcoldf['PM2.5(non-pile burning)']=df[efcol][df['id']=='PM2.5'].values[0]
-        efcoldf['PM2.5(pile-burning)']=df[efcol][df['id']=='PM2.5'].values[0]
+        efcoldf['PM10']=df[efcol][df['id']=='PM10'].values[0]
+        efcoldf['PM2.5(non-pile burning)']=df[efcol][df['id']=='PM2.5_npb'].values[0]
+        efcoldf['PM2.5(pile-burning)']=df[efcol][df['id']=='PM2.5_pb'].values[0]
         efcoldf['OA']=df[efcol][df['id']=='OA'].values[0]
-        efcoldf['EC']=df[efcol][df['id']=='OA'].values[0]
+        efcoldf['EC']=df[efcol][df['id']=='EC'].values[0]
         if ft=='crop residue':
             fdf=efcoldf[['legend','MCE','PM2.5','PM10','PM2.5(non-pile burning)','PM2.5(pile-burning)','OC','BC','OA', 'EC']][efcoldf['fire_type']==ft].reset_index(drop=True)
             fdf=fdf.applymap(lambda x: rounding(x))
             return fdf
-        else:
+        if ft!='crop residue':
             fdf=efcoldf[['legend','MCE','PM2.5','PM10','OA','OC','BC','EC']][efcoldf['fire_type']==ft].reset_index(drop=True)
             fdf=fdf.applymap(lambda x: rounding(x))
             return fdf
-
     if table_name=='recommended ef':
         df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
         efcol='AVG_'+ft.replace(' ','_')
         iid=['PM<2.5','PM10','OA','OC','BC','EC']
-        
         fdf=df[['compound',efcol]][df['id'].isin(iid)].reset_index(drop=True)
         fdf=fdf.applymap(lambda x: rounding(x))
-        
         return fdf
 
 
@@ -204,13 +200,21 @@ def select_compound(ft, com_name,table_name):
         tbl_info=pd.read_sql(text('select * from bkdb_info_rdb_ldb'), con=bk_db)
         tbl_info=tbl_info[tbl_info['fire_type']==ft][tbl_info['db']==table_name]
         tbl_ll=list(tbl_info['table'].unique())
+        fdf=pd.DataFrame()
         try:
+            rdf=pd.DataFrame()
             for tbl in tbl_ll:
+                rdf=pd.DataFrame()
                 dd=pd.read_sql(text('select * from '+tbl), con=db_connection)
                 efcol=list(tbl_info['efcol'][tbl_info['table']==tbl])
                 ind=get_ind (dd, com_name)
-                print(tbl)
-                print(dd[efcol].iloc[ind])
+                if len(ind)!=0:
+                    rdf['table']=[tbl]*len(efcol)
+                    rdf['efcol']=efcol
+                    rdf['EF']=dd[efcol].iloc[ind].mean().values
+                    fdf=pd.concat([fdf,rdf])
+            fdf=fdf.applymap(lambda x: rounding(x))
+            return fdf
         except:
             return 'Compound not found. Search by formula'
     
