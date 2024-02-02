@@ -243,20 +243,21 @@ def boxplot_ef (compound, ft_list, table_name):
     if table_name=='processed ef':
         df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
         efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
-        print('y')
     
     if table_name=='integrated ef':
         df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
         efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
-        print('y')
     
     if ft_list=='all':
         ft_list=['tropical forest','temperate forest','boreal forest',\
                  'savanna', 'crop residue', 'peat']
     #Prepare legend 
     legend=[]
+    rdf=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+    rind=get_ind (rdf, compound)
     for i in range(len(ft_list)):
-        legend.append(ft_list[i].capitalize())
+        n=str(rdf['N_'+ft_list[i].replace(' ','_')].iloc[rind])
+        legend.append(ft_list[i].capitalize()+n)
         
     import seaborn as sns
     pal = sns.color_palette('bright',10)
