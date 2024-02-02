@@ -242,6 +242,15 @@ def boxplot_abundant_nmog (ft):
 def boxplot_ef (compound, ft_list, table_name):
     bk_db=connect_db('backend_db')
     output_db=connect_db('neiva_output_db')
+              
+    if table_name=='processed ef':
+        df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
+        efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
+    
+    if table_name=='integrated ef':
+        df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
+        efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
+    
     if ft_list=='all':
         ft_list=['tropical forest','temperate forest','boreal forest',\
                  'savanna', 'crop residue', 'peat']
@@ -249,14 +258,7 @@ def boxplot_ef (compound, ft_list, table_name):
     legend=[]
     for i in range(len(ft_list)):
         legend.append(ft_list[i].capitalize())
-    
-    if table_name=='processed ef':
-        df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
-        efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
-    if table_name=='integrated ef':
-        df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
-        efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
-    
+        
     import seaborn as sns
     pal = sns.color_palette('bright',10)
     x=np.arange(len(ft_list))
