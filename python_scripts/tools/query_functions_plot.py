@@ -243,87 +243,89 @@ def boxplot_ef (compound, ft_list, table_name):
     if table_name=='processed ef':
         df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
         efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
+        print('y')
     
     if table_name=='integrated ef':
         df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
         efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
+        print('y')
     
     if ft_list=='all':
         ft_list=['tropical forest','temperate forest','boreal forest',\
                  'savanna', 'crop residue', 'peat']
     # Prepare legend 
-    legend=[]
-    for i in range(len(ft_list)):
-        legend.append(ft_list[i].capitalize())
+    # legend=[]
+    # for i in range(len(ft_list)):
+    #     legend.append(ft_list[i].capitalize())
         
-    import seaborn as sns
-    pal = sns.color_palette('bright',10)
-    x=np.arange(len(ft_list))
-    plt.figure(figsize=(2.5*len(ft_list),7))
-    ax1 = plt.subplot(111)
+    # import seaborn as sns
+    # pal = sns.color_palette('bright',10)
+    # x=np.arange(len(ft_list))
+    # plt.figure(figsize=(2.5*len(ft_list),7))
+    # ax1 = plt.subplot(111)
     
-    for i in range(len(ft_list)):
-        iind=get_ind (df, compound)
-        efcol=efcoldf['efcol'][efcoldf['fire_type']==ft_list[i]]
-        aa=df[efcol][df.index.isin(iind)].mean().dropna().values
-        vals=aa 
+    # for i in range(len(ft_list)):
+    #     iind=get_ind (df, compound)
+    #     efcol=efcoldf['efcol'][efcoldf['fire_type']==ft_list[i]]
+    #     aa=df[efcol][df.index.isin(iind)].mean().dropna().values
+    #     vals=aa 
         
-        bp1 = ax1.boxplot(vals,showmeans=True,meanline=True,showfliers=True,patch_artist=True,positions=[i], widths=0.3,\
-            medianprops=dict(linewidth=0),boxprops= dict(linewidth=1.5,edgecolor='k',facecolor=pal[0]),\
-                  whiskerprops=dict(linestyle='-',linewidth=1,color='k'),\
-                  meanprops=dict(color='red',linewidth=2,linestyle='-'),
-                  flierprops = dict(marker='+',markerfacecolor=pal[8], markersize=7,))
+    #     bp1 = ax1.boxplot(vals,showmeans=True,meanline=True,showfliers=True,patch_artist=True,positions=[i], widths=0.3,\
+    #         medianprops=dict(linewidth=0),boxprops= dict(linewidth=1.5,edgecolor='k',facecolor=pal[0]),\
+    #               whiskerprops=dict(linestyle='-',linewidth=1,color='k'),\
+    #               meanprops=dict(color='red',linewidth=2,linestyle='-'),
+    #               flierprops = dict(marker='+',markerfacecolor=pal[8], markersize=7,))
         
-        plt.ylabel('Emission factor (g/kg)', fontsize=15)
-        #plt.xlabel('Compound', fontsize=11)
+    #     plt.ylabel('Emission factor (g/kg)', fontsize=15)
+    #     #plt.xlabel('Compound', fontsize=11)
                 
-        plt.tick_params(labelsize=15)
-        ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
-        ax1.tick_params(axis='x',which='both',bottom=False)
-        plt.setp(ax1.spines.values(),lw=1.5)
+    #     plt.tick_params(labelsize=15)
+    #     ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
+    #     ax1.tick_params(axis='x',which='both',bottom=False)
+    #     plt.setp(ax1.spines.values(),lw=1.5)
           
-        #plt.title("Compound: "+compound+"; "+"Fire type: "+ ft.capitalize(), fontsize=11)
-        plt.xticks(x, legend, rotation=90, fontsize=15)
-        #plt.legend(fontsize=10)
-        plt.tight_layout()
-    if table_name=='processed ef':
-        df=pd.read_sql('select * from Processed_EF', con=output_db)
-        efcoldf=pd.read_sql('select * from info_efcol_processed_data', con=bk_db)
+    #     #plt.title("Compound: "+compound+"; "+"Fire type: "+ ft.capitalize(), fontsize=11)
+    #     plt.xticks(x, legend, rotation=90, fontsize=15)
+    #     #plt.legend(fontsize=10)
+    #     plt.tight_layout()
+    # if table_name=='processed ef':
+    #     df=pd.read_sql('select * from Processed_EF', con=output_db)
+    #     efcoldf=pd.read_sql('select * from info_efcol_processed_data', con=bk_db)
     
-    if table_name=='integrated ef':
-        df=pd.read_sql('select * from Integrated_EF', con=output_db)
-        efcoldf=pd.read_sql('select * from bkdb_info_efcol', con=bk_db)
+    # if table_name=='integrated ef':
+    #     df=pd.read_sql('select * from Integrated_EF', con=output_db)
+    #     efcoldf=pd.read_sql('select * from bkdb_info_efcol', con=bk_db)
     
-    import seaborn as sns
-    pal = sns.color_palette('bright',10)
-    x=np.arange(len(ft_list))
-    plt.figure(figsize=(2.5*len(ft_list),7))
-    ax1 = plt.subplot(111)
+    # import seaborn as sns
+    # pal = sns.color_palette('bright',10)
+    # x=np.arange(len(ft_list))
+    # plt.figure(figsize=(2.5*len(ft_list),7))
+    # ax1 = plt.subplot(111)
     
-    for i in range(len(ft_list)):
-        iind=get_ind (df, compound)
-        efcol=efcoldf['efcol'][efcoldf['fire_type']==ft_list[i]]
-        aa=df[efcol][df.index.isin(iind)].mean().dropna().values
-        vals=aa 
+    # for i in range(len(ft_list)):
+    #     iind=get_ind (df, compound)
+    #     efcol=efcoldf['efcol'][efcoldf['fire_type']==ft_list[i]]
+    #     aa=df[efcol][df.index.isin(iind)].mean().dropna().values
+    #     vals=aa 
         
-        bp1 = ax1.boxplot(vals,showmeans=True,meanline=True,showfliers=True,patch_artist=True,positions=[i], widths=0.3,\
-            medianprops=dict(linewidth=0),boxprops= dict(linewidth=1.5,edgecolor='k',facecolor=pal[0]),\
-                  whiskerprops=dict(linestyle='-',linewidth=1,color='k'),\
-                  meanprops=dict(color='red',linewidth=2,linestyle='-'),
-                  flierprops = dict(marker='+',markerfacecolor=pal[8], markersize=7,))
+    #     bp1 = ax1.boxplot(vals,showmeans=True,meanline=True,showfliers=True,patch_artist=True,positions=[i], widths=0.3,\
+    #         medianprops=dict(linewidth=0),boxprops= dict(linewidth=1.5,edgecolor='k',facecolor=pal[0]),\
+    #               whiskerprops=dict(linestyle='-',linewidth=1,color='k'),\
+    #               meanprops=dict(color='red',linewidth=2,linestyle='-'),
+    #               flierprops = dict(marker='+',markerfacecolor=pal[8], markersize=7,))
         
-        plt.ylabel('Emission factor (g/kg)', fontsize=15)
-        #plt.xlabel('Compound', fontsize=11)
+    #     plt.ylabel('Emission factor (g/kg)', fontsize=15)
+    #     #plt.xlabel('Compound', fontsize=11)
                 
-        plt.tick_params(labelsize=15)
-        ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
-        ax1.tick_params(axis='x',which='both',bottom=False)
-        plt.setp(ax1.spines.values(),lw=1.5)
+    #     plt.tick_params(labelsize=15)
+    #     ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
+    #     ax1.tick_params(axis='x',which='both',bottom=False)
+    #     plt.setp(ax1.spines.values(),lw=1.5)
           
-        #plt.title("Compound: "+compound+"; "+"Fire type: "+ ft.capitalize(), fontsize=11)
-        plt.xticks(x, legend, rotation=90, fontsize=15)
-        #plt.legend(fontsize=10)
-        plt.tight_layout()
+    #     #plt.title("Compound: "+compound+"; "+"Fire type: "+ ft.capitalize(), fontsize=11)
+    #     plt.xticks(x, legend, rotation=90, fontsize=15)
+    #     #plt.legend(fontsize=10)
+    #     plt.tight_layout()
     return
 
 
