@@ -240,7 +240,12 @@ def boxplot_abundant_nmog (ft):
     return 
 
 def boxplot_ef (compound, ft_list, table_name):
-    
+    bk_db=connect_db('backend_db')
+    output_db=connect_db('neiva_output_db')
+    if ft_list=='all':
+        ft_list=['tropical forest','temperate forest','boreal forest',\
+                 'savanna', 'crop residue', 'peat']
+    # Prepare legend 
     legend=[]
     for i in range(len(ft_list)):
         legend.append(ft_list[i].capitalize())
