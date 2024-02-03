@@ -256,8 +256,8 @@ def boxplot_ef (compound, ft_list, table_name):
     rdf=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
     rind=get_ind (rdf, compound)
     for i in range(len(ft_list)):
-        n=str(rdf['N_'+ft_list[i].replace(' ','_')].iloc[rind])
-        legend.append(ft_list[i].capitalize()+n)
+        n=str(rdf['N_'+ft_list[i].replace(' ','_')].iloc[rind]).replace('.0','')
+        legend.append(ft_list[i].capitalize()+'(n='+n+')')
         
     import seaborn as sns
     pal = sns.color_palette('bright',10)

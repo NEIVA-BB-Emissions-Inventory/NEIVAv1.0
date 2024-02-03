@@ -212,6 +212,7 @@ def select_compound(ft, com_name,table_name):
                     rdf['EF']=dd[efcol].iloc[ind].mean().values
                     rdf['db']=['raw db']*len(efcol)
                     fdf=pd.concat([fdf,rdf])
+            fdf=fdf[fdf['EF'].notna()].reset_index(drop=True)
             fdf=fdf.applymap(lambda x: rounding(x))
             return fdf
         except:
