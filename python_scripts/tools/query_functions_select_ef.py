@@ -22,59 +22,27 @@ from NEIVA.python_scripts.tools.join_ef_property_table import *
 
 from sqlalchemy import text
 
-def get_ind (df, compound):
-      if compound == 'PM<2.5':
-          ind=list(df[df['pollutant_category']=='PM total'][df['compound'].str.contains('PM')][df['id']!='PM10'][df['id']!='PM2.5_ipcc'].index)
-          return ind
-      if compound == 'PM10':
-          ind=list(df[df['id']=='PM10'].index)
-          return ind
-      if compound == 'OA':
-          ind=list(df[df['id']=='OA'].index)
-          return ind
-      if compound == 'EC':
-          ind=list(df[df['id']=='EC'].index)
-          return ind
-      if compound == 'BC':
-          ind=list(df[df['id']=='BC'].index)
-          return ind
-      if compound == 'OC':
-          ind=list(df[df['id']=='OC'].index)
-          return ind
-      if compound == 'NOx_as_NO':
-          ind=list(df[df['id']=='NOx_as_NO'].index)
-          return ind
-      else:
-          iid=pcp.get_compounds(compound, 'name')[0].inchi
-          ind=list(df[df['id']==iid].index)
-          return ind
 
-def get_ind_rdf (df, compound):
-      if compound == 'PM<2.5':
-          ind=list(df[df['id']=='PM<2.5'].index)
-          return ind
-      if compound == 'PM10':
-          ind=list(df[df['id']=='PM<2.5'].index)
-          return ind
-      if compound == 'OA':
-          ind=list(df[df['id']=='OA'].index)
-          return ind
-      if compound == 'EC':
-          ind=list(df[df['id']=='EC'].index)
-          return ind
-      if compound == 'BC':
-          ind=list(df[df['id']=='BC'].index)
-          return ind
-      if compound == 'OC':
-          ind=list(df[df['id']=='OC'].index)
-          return ind
-      if compound == 'NOx_as_NO':
-          ind=list(df[df['id']=='NOx_as_NO'].index)
-          return ind
-      else:
-          iid=pcp.get_compounds(compound, 'name')[0].inchi
-          ind=list(df[df['id']==iid].index)
-          return ind
+def get_ind(df, compound):
+    if compound == 'PM<2.5':
+        ind = df[(df['pollutant_category'] == 'PM total') & 
+                 (df['compound'].str.contains('PM')) & 
+                 (~df['id'].isin(['PM10', 'PM2.5_ipcc']))].index.tolist()
+    elif compound in ['PM10', 'OA', 'EC', 'BC', 'OC', 'NOx_as_NO']:
+        ind = df[df['id'] == compound].index.tolist()
+    else:
+        iid = pcp.get_compounds(compound, 'name')[0].inchi
+        ind = df[df['id'] == iid].index.tolist()
+    return ind
+
+def get_ind_rdf(df, compound):
+    if compound in ['PM<2.5', 'PM10', 'OA', 'EC', 'BC', 'OC', 'NOx_as_NO']:
+        ind = df[df['id'] == compound].index.tolist()
+    else:
+        iid = pcp.get_compounds(compound, 'name')[0].inchi
+        ind = df[df['id'] == iid].index.tolist()
+    
+    return ind
 
 # This function returns the PM2.5, OC, BC data for a specified fire type and table name. The table name inlcudes three different tables
 # integrated ef, processed ef, recommended ef.
@@ -200,18 +168,17 @@ def select_compound(ft, com_name,table_name):
         tbl_ll=list(tbl_info['table'].unique())
         fdf=pd.DataFrame()
         try:
-            rdf=pd.DataFrame()
             for tbl in tbl_ll:
                 rdf=pd.DataFrame()
                 dd=pd.read_sql(text('select * from '+tbl), con=db_connection)
                 efcol=list(tbl_info['efcol'][tbl_info['table']==tbl])
                 ind=get_ind (dd, com_name)
-                if len(ind)!=0:
-                    rdf['table']=[tbl]*len(efcol)
-                    rdf['efcol']=efcol
-                    rdf['EF']=dd[efcol].iloc[ind].mean().values
-                    rdf['db']=['raw db']*len(efcol)
-                    fdf=pd.concat([fdf,rdf])
+                rdf['table']=[tbl]*len(efcol)
+                rdf['efcol']=efcol
+                rdf['EF']=dd[efcol].iloc[ind].mean().values
+                rdf['db']=['raw db']*len(efcol)
+                rdf=rdf.sort_values(by='EF', ascending=False).reset_index(drop=True)
+                fdf=pd.concat([fdf,rdf])
             fdf=fdf[fdf['EF'].notna()].reset_index(drop=True)
             fdf=fdf.applymap(lambda x: rounding(x))
             return fdf
@@ -224,18 +191,197 @@ def select_compound(ft, com_name,table_name):
         tbl_ll=list(tbl_info['table'].unique())
         fdf=pd.DataFrame()
         try:
-            rdf=pd.DataFrame()
             for tbl in tbl_ll:
                 rdf=pd.DataFrame()
                 dd=pd.read_sql(text('select * from '+tbl), con=db_connection)
                 efcol=list(tbl_info['efcol'][tbl_info['table']==tbl])
                 ind=get_ind (dd, com_name)
-                if len(ind)!=0:
-                    rdf['table']=[tbl]*len(efcol)
-                    rdf['efcol']=efcol
-                    rdf['EF']=dd[efcol].iloc[ind].mean().values
-                    rdf['db']=['legacy db']*len(efcol)
-                    fdf=pd.concat([fdf,rdf])
+                rdf['table']=[tbl]*len(efcol)
+                rdf['efcol']=efcol
+                rdf['EF']=dd[efcol].iloc[ind].mean().values
+                rdf['db']=['legacy db']*len(efcol)
+                fdf=pd.concat([fdf,rdf])
+            fdf=fdf[fdf['EF'].notna()].reset_index(drop=True)
+            fdf=fdf.applymap(lambda x: rounding(x))
+            return fdf
+        except:
+            return 'Compound not found. Search by formula'
+
+def select_compound(ft, com_name,table_name):
+    bk_db=connect_db('backend_db')
+    output_db=connect_db('neiva_output_db')
+    if table_name=='integrated ef':
+        df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
+        efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
+        allcol= ['legend','fuel_type','measurement_type','MCE',com_name]
+        try:
+                ind = get_ind (df, com_name)
+                efcol=list(efcoldf['efcol'])
+                efcoldf[com_name]=df[efcol][df.index.isin(ind)].mean().values
+                ll=efcoldf[allcol][efcoldf['fire_type']==ft]
+                ll=ll.sort_values(by='measurement_type')
+                ll=ll[ll[com_name].notna()]
+                ll=ll.reset_index(drop=True)
+                ll=ll.applymap(lambda x: rounding(x))
+                return ll
+        except:
+                return 'Compound not found. Search by formula'
+    if table_name=='processed ef':
+        df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
+        efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
+        allcol= ['legend','fuel_type','measurement_type','MCE',com_name]
+        try:
+            ind = get_ind (df, com_name)
+            efcol=list(efcoldf['efcol'])
+            efcoldf[com_name]=df[efcol][df.index.isin(ind)].mean().values
+            ll=efcoldf[allcol][efcoldf['fire_type']==ft]
+            ll=ll.sort_values(by='measurement_type')
+            ll=ll[ll[com_name].notna()]
+            ll=ll.reset_index(drop=True)
+            ll=ll.applymap(lambda x: rounding(x))
+            return ll
+        except:
+            return 'Compound not found. Search by formula'
+    if table_name=='recommended ef':
+        df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+        df=df.applymap(lambda x: rounding(x))
+        try:
+            ind=get_ind_rdf (df,com_name)[0]
+            col='AVG_'+ft.replace(' ','_')
+            df[col]=df[col]
+            return df[['mm','formula','compound',col]][ind:ind+1].reset_index(drop=True)
+        except:
+            return 'Compound not found. Search by formula'
+    if table_name=='rdb':
+        db_connection=connect_db('raw_db')
+        tbl_info=pd.read_sql(text('select * from bkdb_info_rdb_ldb'), con=bk_db)
+        tbl_info=tbl_info[tbl_info['fire_type']==ft][tbl_info['db']==table_name]
+        tbl_ll=list(tbl_info['table'].unique())
+        fdf=pd.DataFrame()
+        try:
+            for tbl in tbl_ll:
+                rdf=pd.DataFrame()
+                dd=pd.read_sql('select * from '+tbl, con=db_connection)
+                efcol=list(tbl_info['efcol'][tbl_info['table']==tbl])
+                ind=get_ind (dd, com_name)
+                rdf['table']=[tbl]*len(efcol)
+                rdf['efcol']=efcol
+                rdf['EF']=dd[efcol].iloc[ind].mean().values
+                rdf['db']=['raw db']*len(efcol)
+                rdf=rdf.sort_values(by='EF', ascending=False).reset_index(drop=True)
+                fdf=pd.concat([fdf,rdf])
+            fdf=fdf[fdf['EF'].notna()].reset_index(drop=True)
+            fdf=fdf.applymap(lambda x: rounding(x))
+            return fdf
+        except:
+            return 'Compound not found. Search by formula'
+    if table_name=='ldb':
+        db_connection=connect_db('legacy_db')
+        tbl_info=pd.read_sql(text('select * from bkdb_info_rdb_ldb'), con=bk_db)
+        tbl_info=tbl_info[tbl_info['fire_type']==ft][tbl_info['db']==table_name]
+        tbl_ll=list(tbl_info['table'].unique())
+        fdf=pd.DataFrame()
+        try:
+            for tbl in tbl_ll:
+                rdf=pd.DataFrame()
+                dd=pd.read_sql('select * from '+tbl, con=db_connection)
+                efcol=list(tbl_info['efcol'][tbl_info['table']==tbl])
+                ind=get_ind (dd, com_name)
+                rdf['table']=[tbl]*len(efcol)
+                rdf['efcol']=efcol
+                rdf['EF']=dd[efcol].iloc[ind].mean().values
+                rdf['db']=['legacy db']*len(efcol)
+                fdf=pd.concat([fdf,rdf])
+            fdf=fdf[fdf['EF'].notna()].reset_index(drop=True)
+            fdf=fdf.applymap(lambda x: rounding(x))
+            return fdf
+        except:
+            return 'Compound not found. Search by formula'
+def select_compound(ft, com_name,table_name):
+    bk_db=connect_db('backend_db')
+    output_db=connect_db('neiva_output_db')
+    if table_name=='integrated ef':
+        df=pd.read_sql(text('select * from Integrated_EF'), con=output_db)
+        efcoldf=pd.read_sql(text('select * from bkdb_info_efcol'), con=bk_db)
+        allcol= ['legend','fuel_type','measurement_type','MCE',com_name]
+        try:
+                ind = get_ind (df, com_name)
+                efcol=list(efcoldf['efcol'])
+                efcoldf[com_name]=df[efcol][df.index.isin(ind)].mean().values
+                ll=efcoldf[allcol][efcoldf['fire_type']==ft]
+                ll=ll.sort_values(by='measurement_type')
+                ll=ll[ll[com_name].notna()]
+                ll=ll.reset_index(drop=True)
+                ll=ll.applymap(lambda x: rounding(x))
+                return ll
+        except:
+                return 'Compound not found. Search by formula'
+    if table_name=='processed ef':
+        df=pd.read_sql(text('select * from Processed_EF'), con=output_db)
+        efcoldf=pd.read_sql(text('select * from info_efcol_processed_data'), con=bk_db)
+        allcol= ['legend','fuel_type','measurement_type','MCE',com_name]
+        try:
+            ind = get_ind (df, com_name)
+            efcol=list(efcoldf['efcol'])
+            efcoldf[com_name]=df[efcol][df.index.isin(ind)].mean().values
+            ll=efcoldf[allcol][efcoldf['fire_type']==ft]
+            ll=ll.sort_values(by='measurement_type')
+            ll=ll[ll[com_name].notna()]
+            ll=ll.reset_index(drop=True)
+            ll=ll.applymap(lambda x: rounding(x))
+            return ll
+        except:
+            return 'Compound not found. Search by formula'
+    if table_name=='recommended ef':
+        df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+        df=df.applymap(lambda x: rounding(x))
+        try:
+            ind=get_ind_rdf (df,com_name)[0]
+            col='AVG_'+ft.replace(' ','_')
+            df[col]=df[col]
+            return df[['mm','formula','compound',col]][ind:ind+1].reset_index(drop=True)
+        except:
+            return 'Compound not found. Search by formula'
+    if table_name=='rdb':
+        db_connection=connect_db('raw_db')
+        tbl_info=pd.read_sql(text('select * from bkdb_info_rdb_ldb'), con=bk_db)
+        tbl_info=tbl_info[tbl_info['fire_type']==ft][tbl_info['db']==table_name]
+        tbl_ll=list(tbl_info['table'].unique())
+        fdf=pd.DataFrame()
+        try:
+            for tbl in tbl_ll:
+                rdf=pd.DataFrame()
+                dd=pd.read_sql('select * from '+tbl, con=db_connection)
+                efcol=list(tbl_info['efcol'][tbl_info['table']==tbl])
+                ind=get_ind (dd, com_name)
+                rdf['table']=[tbl]*len(efcol)
+                rdf['efcol']=efcol
+                rdf['EF']=dd[efcol].iloc[ind].mean().values
+                rdf['db']=['raw db']*len(efcol)
+                rdf=rdf.sort_values(by='EF', ascending=False).reset_index(drop=True)
+                fdf=pd.concat([fdf,rdf])
+            fdf=fdf[fdf['EF'].notna()].reset_index(drop=True)
+            fdf=fdf.applymap(lambda x: rounding(x))
+            return fdf
+        except:
+            return 'Compound not found. Search by formula'
+    if table_name=='ldb':
+        db_connection=connect_db('legacy_db')
+        tbl_info=pd.read_sql(text('select * from bkdb_info_rdb_ldb'), con=bk_db)
+        tbl_info=tbl_info[tbl_info['fire_type']==ft][tbl_info['db']==table_name]
+        tbl_ll=list(tbl_info['table'].unique())
+        fdf=pd.DataFrame()
+        try:
+            for tbl in tbl_ll:
+                rdf=pd.DataFrame()
+                dd=pd.read_sql('select * from '+tbl, con=db_connection)
+                efcol=list(tbl_info['efcol'][tbl_info['table']==tbl])
+                ind=get_ind (dd, com_name)
+                rdf['table']=[tbl]*len(efcol)
+                rdf['efcol']=efcol
+                rdf['EF']=dd[efcol].iloc[ind].mean().values
+                rdf['db']=['legacy db']*len(efcol)
+                fdf=pd.concat([fdf,rdf])
             fdf=fdf[fdf['EF'].notna()].reset_index(drop=True)
             fdf=fdf.applymap(lambda x: rounding(x))
             return fdf

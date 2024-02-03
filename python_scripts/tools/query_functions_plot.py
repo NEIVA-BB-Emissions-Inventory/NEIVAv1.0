@@ -15,35 +15,9 @@ from NEIVA.python_scripts.tools.assign_mozart_species import mozart_species
 from NEIVA.python_scripts.tools.assign_geos_chem_species import geos_chem_species
 from NEIVA.python_scripts.data_integration_process.sort_molec_formula import *
 from NEIVA.python_scripts.tools.join_ef_property_table import *
+from NEIVA.python_scripts.tools.query_functions_select_ef import get_ind
 
 from sqlalchemy import text
-
-def get_ind (df, compound):
-      if compound == 'PM<2.5':
-          ind=list(df[df['pollutant_category']=='PM total'][df['compound'].str.contains('PM')][df['id']!='PM10'][df['id']!='PM2.5_ipcc'].index)
-          return ind
-      if compound == 'PM10':
-          ind=list(df[df['id']=='PM10'].index)
-          return ind
-      if compound == 'OA':
-          ind=list(df[df['id']=='OA'].index)
-          return ind
-      if compound == 'EC':
-          ind=list(df[df['id']=='EC'].index)
-          return ind
-      if compound == 'BC':
-          ind=list(df[df['id']=='BC'].index)
-          return ind
-      if compound == 'OC':
-          ind=list(df[df['id']=='OC'].index)
-          return ind
-      if compound == 'NOx_as_NO':
-          ind=list(df[df['id']=='NOx_as_NO'].index)
-          return ind
-      else:
-          iid=pcp.get_compounds(compound, 'name')[0].inchi
-          ind=list(df[df['id']==iid].index)
-          return ind
 
 def prepare_legend(fdf):
   for i in range(len(fdf)):
@@ -92,7 +66,6 @@ def plot_ef(ft, compound, table_name):
         
         plt.scatter(x, fdf[compound], zorder=3, color=pal[0], edgecolor='k', label='Field EF')
         plt.scatter(x_lab, ef_lab, zorder=3, color=pal[8], edgecolor='k', label='Lab EF')
-        
         
         plt.ylabel('Emission factor (g/kg)', fontsize=11)
         
@@ -251,16 +224,7 @@ def boxplot_ef (compound, ft_list, table_name):
     if ft_list=='all':
         ft_list=['tropical forest','temperate forest','boreal forest',\
                  'savanna', 'crop residue', 'peat']
-    #Prepare legend 
-    # legend=[]
-    # rdf=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
-    # rind=get_ind (rdf, compound)
-    # for i in range(len(ft_list)):
-    #     ncol='N_'+ft_list[i].replace(' ','_')
-    #     nval=int(rdf[ncol].iloc[rind])
-    #     n=str(nval).replace('.0','')
-    #     legend.append(ft_list[i].capitalize()+'(n='+n+')')
-    
+            
     import seaborn as sns
     pal = sns.color_palette('bright',10)
     x=np.arange(len(ft_list))
