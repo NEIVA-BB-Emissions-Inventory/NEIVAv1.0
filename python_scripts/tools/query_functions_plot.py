@@ -252,14 +252,14 @@ def boxplot_ef (compound, ft_list, table_name):
         ft_list=['tropical forest','temperate forest','boreal forest',\
                  'savanna', 'crop residue', 'peat']
     #Prepare legend 
-    legend=[]
-    rdf=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
-    rind=get_ind (rdf, compound)
-    for i in range(len(ft_list)):
-        ncol='N_'+ft_list[i].replace(' ','_')
-        nval=int(rdf[ncol].iloc[rind])
-        n=str(nval).replace('.0','')
-        legend.append(ft_list[i].capitalize()+'(n='+n+')')
+    # legend=[]
+    # rdf=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
+    # rind=get_ind (rdf, compound)
+    # for i in range(len(ft_list)):
+    #     ncol='N_'+ft_list[i].replace(' ','_')
+    #     nval=int(rdf[ncol].iloc[rind])
+    #     n=str(nval).replace('.0','')
+    #     legend.append(ft_list[i].capitalize()+'(n='+n+')')
     
     import seaborn as sns
     pal = sns.color_palette('bright',10)
@@ -267,11 +267,13 @@ def boxplot_ef (compound, ft_list, table_name):
     plt.figure(figsize=(2.5*len(ft_list),7))
     ax1 = plt.subplot(111)
     
+    legend=[]
     for i in range(len(ft_list)):
         iind=get_ind (df, compound)
         efcol=efcoldf['efcol'][efcoldf['fire_type']==ft_list[i]]
         aa=df[efcol][df.index.isin(iind)].mean().dropna().values
-        vals=aa 
+        vals=aa
+        legend.append(ft_list[i].capitalize()+'(n='+str(len(aa))+')')
         
         bp1 = ax1.boxplot(vals,showmeans=True,meanline=True,showfliers=True,patch_artist=True,positions=[i], widths=0.3,\
             medianprops=dict(linewidth=0),boxprops= dict(linewidth=1.5,edgecolor='k',facecolor=pal[0]),\
@@ -288,7 +290,6 @@ def boxplot_ef (compound, ft_list, table_name):
     plt.setp(ax1.spines.values(),lw=1.5)
       
     #plt.title("Compound: "+compound+"; "+"Fire type: "+ ft.capitalize(), fontsize=11)
-    print(legend)
     plt.xticks(x, legend, rotation=90, fontsize=15)
     #plt.legend(fontsize=10)
     plt.tight_layout()
