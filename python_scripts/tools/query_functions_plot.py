@@ -257,10 +257,10 @@ def boxplot_ef (compound, ft_list, table_name):
     rind=get_ind (rdf, compound)
     for i in range(len(ft_list)):
         ncol='N_'+ft_list[i].replace(' ','_')
-        nval=rdf[ncol].iloc[rind]
+        nval=int(rdf[ncol].iloc[rind])
         n=str(nval).replace('.0','')
         legend.append(ft_list[i].capitalize()+'(n='+n+')')
-        
+    
     import seaborn as sns
     pal = sns.color_palette('bright',10)
     x=np.arange(len(ft_list))
