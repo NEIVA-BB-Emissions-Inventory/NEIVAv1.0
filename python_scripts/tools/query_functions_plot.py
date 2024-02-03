@@ -277,18 +277,18 @@ def boxplot_ef (compound, ft_list, table_name):
                   meanprops=dict(color='red',linewidth=2,linestyle='-'),
                   flierprops = dict(marker='+',markerfacecolor=pal[8], markersize=7,))
         
-        plt.ylabel('Emission factor (g/kg)', fontsize=15)
-        #plt.xlabel('Compound', fontsize=11)
-                
-        plt.tick_params(labelsize=15)
-        ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
-        ax1.tick_params(axis='x',which='both',bottom=False)
-        plt.setp(ax1.spines.values(),lw=1.5)
-          
-        #plt.title("Compound: "+compound+"; "+"Fire type: "+ ft.capitalize(), fontsize=11)
-        plt.xticks(x, legend, rotation=90, fontsize=15)
-        #plt.legend(fontsize=10)
-        plt.tight_layout()
+    plt.ylabel('Emission factor (g/kg)', fontsize=15)
+    #plt.xlabel('Compound', fontsize=11)
+            
+    plt.tick_params(labelsize=15)
+    ax1.grid(linestyle='--',color='#EBE7E0',zorder=4)
+    ax1.tick_params(axis='x',which='both',bottom=False)
+    plt.setp(ax1.spines.values(),lw=1.5)
+      
+    #plt.title("Compound: "+compound+"; "+"Fire type: "+ ft.capitalize(), fontsize=11)
+    plt.xticks(x, legend, rotation=90, fontsize=15)
+    #plt.legend(fontsize=10)
+    plt.tight_layout()
     return
 
 
