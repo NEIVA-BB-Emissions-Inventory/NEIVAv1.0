@@ -25,9 +25,7 @@ from sqlalchemy import text
 
 def get_ind(df, compound):
     if compound == 'PM<2.5':
-        ind = df[(df['pollutant_category'] == 'PM total') & 
-                 (df['compound'].str.contains('PM')) & 
-                 (~df['id'].isin(['PM10', 'PM2.5_ipcc']))].index.tolist()
+        ind = df[df['compound'].str.contains('PM')][df['id']!='PM10'][df['id']!='PM2.5_ipcc'].index.tolist()
     elif compound in ['PM10', 'OA', 'EC', 'BC', 'OC', 'NOx_as_NO']:
         ind = df[df['id'] == compound].index.tolist()
     else:
