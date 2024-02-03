@@ -49,6 +49,7 @@ def calculate_average_lab_study(intdf,efcoldf):
                 df['efcol']=[newcol]
                 df['fire_type']=[ft]
                 df['study']=[study]
+                df['fuel_type']=','.join(efcoldf['fuel_type'][efcoldf['efcol'].isin(efcols)].unique())
                 df['measurement_type']=['lab']                       
                 efcoldf=efcoldf[~efcoldf['efcol'].isin(efcols)]
                 efcoldf = pd.concat([efcoldf, df], ignore_index=True)
