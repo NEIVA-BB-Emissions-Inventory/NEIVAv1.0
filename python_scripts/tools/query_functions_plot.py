@@ -256,7 +256,9 @@ def boxplot_ef (compound, ft_list, table_name):
     rdf=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
     rind=get_ind (rdf, compound)
     for i in range(len(ft_list)):
-        n=str(rdf['N_'+ft_list[i].replace(' ','_')].iloc[rind]).replace('.0','')
+        ncol='N_'+ft_list[i].replace(' ','_')
+        nval=rdf[ncol].iloc[rind]
+        n=str(nval).replace('.0','')
         legend.append(ft_list[i].capitalize()+'(n='+n+')')
         
     import seaborn as sns
@@ -286,10 +288,10 @@ def boxplot_ef (compound, ft_list, table_name):
     plt.setp(ax1.spines.values(),lw=1.5)
       
     #plt.title("Compound: "+compound+"; "+"Fire type: "+ ft.capitalize(), fontsize=11)
+    print(legend)
     plt.xticks(x, legend, rotation=90, fontsize=15)
     #plt.legend(fontsize=10)
     plt.tight_layout()
-    return
 
 
 def plot_model_surrogate (dd, ft, chem, model_surrogate):
