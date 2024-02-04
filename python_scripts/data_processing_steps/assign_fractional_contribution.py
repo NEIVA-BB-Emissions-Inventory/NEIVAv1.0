@@ -110,8 +110,8 @@ def Get_fc_calc(fc,df):
                     n=df[ncol].iloc[ind]
                     df.loc[ind,col]=(lump_ef_contribution+df[col].iloc[ind]*n)/(n+1)
                     
-                    if str(df[col].iloc[ind])!='nan':
-                        df.loc[ind,ncol]=n+1
+                    # if str(df[col].iloc[ind])!='nan':
+                    #     df.loc[ind,ncol]=n+1
                 
                 df.loc[lumpind,col]=np.nan
                 df.loc[lumpind,ncol]=np.nan
