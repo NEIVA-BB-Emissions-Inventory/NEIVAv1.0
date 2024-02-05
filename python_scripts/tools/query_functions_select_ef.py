@@ -126,8 +126,9 @@ def select_compound(ft, com_name,table_name):
                 efcol=list(efcoldf['efcol'])
                 efcoldf['EF']=df[efcol][df.index.isin(ind)].mean().values
                 ll=efcoldf[allcol][efcoldf['fire_type']==ft]
-                ll=ll.sort_values(by='measurement_type')
+                #ll=ll.sort_values(by='measurement_type')
                 ll=ll[ll['EF'].notna()]
+                ll=ll.sort_values(by='EF')
                 ll=ll.reset_index(drop=True)
                 ll=ll.applymap(lambda x: rounding(x))
                 return ll
@@ -142,8 +143,9 @@ def select_compound(ft, com_name,table_name):
             efcol=list(efcoldf['efcol'])
             efcoldf['EF']=df[efcol][df.index.isin(ind)].mean().values
             ll=efcoldf[allcol][efcoldf['fire_type']==ft]
-            ll=ll.sort_values(by='measurement_type')
+            #ll=ll.sort_values(by='measurement_type')
             ll=ll[ll['EF'].notna()]
+            ll=ll.sort_values(by='EF')
             ll=ll.reset_index(drop=True)
             ll=ll.applymap(lambda x: rounding(x))
             return ll
