@@ -5,7 +5,7 @@
 
 NEIVA is a biomass burning emissions inventory that includes data files, database design codes, and tools. We recommend emission factors (EF) and provide essential property data relevant to atmospheric modeling. Additionally, we map chemical compounds to model surrogates, making it easier to use in modeling. The database is reproducible, and we offer programs for data integration, data processing steps. These programs can seamlessly incorporate new data with minimal human review needed in the process. 
 
-## Organization of the NEIVA Github Repository
+## Organization of the NEIVA Github repository
 
  * [data](data): The database contents are stored in '.sql' files.
  * [python_scripts](python_scripts): Contains data integration, data processing, querying functions.
