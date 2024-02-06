@@ -43,8 +43,8 @@ def calc_NOx_as_NO (intdf):
     NOx_ind=intdf[intdf['id']=='NOx_as_NO'].index[0]
     
     for col in efcol:
-        intdf.loc[NOx_ind, col] = intdf[col].iloc[no2_ind] * (30/46) + intdf[col].iloc[no_ind]
-    
+        if str(intdf[col].iloc[NOx_ind])=='nan':
+            intdf.loc[NOx_ind, col] = intdf[col].iloc[no2_ind] * (30/46) + intdf[col].iloc[no_ind]
     return intdf
 
 
@@ -107,8 +107,8 @@ def calculate_average_fire_types(df,efcoldf):
     avgcol=GrpCol(avgdf)[4]
     pmvals=avgdf[avgcol][avgdf['pollutant_category']=='PM total'][avgdf['compound'].str.contains('PM',na=False)][avgdf['id']!='PM10'][avgdf['id']!='PM2.5_ipcc'].mean().values.tolist()
     pmind=avgdf[avgdf['id']=='PM2.5'].index[0]
-    avgdf.loc[pmind,'compound']='PM<2.5'
-    avgdf.loc[pmind,'id']='PM<2.5'
+    avgdf.loc[pmind,'compound']='PM2.5*'
+    avgdf.loc[pmind,'id']='PM2.5*'
     
     # Assigning PM<2.5 values tp all average columns.
     for i in range(len(avgcol)):

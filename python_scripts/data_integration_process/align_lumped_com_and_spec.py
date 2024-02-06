@@ -144,7 +144,10 @@ def import_fc_dataset(nmogdf,lc_spec_df):
     simple_fc=nmogdf[nmogdf['formula'].isin(assign_formula_type(nmogdf)[3])]
     # Exclude entries present in specific_fc_df.
     simple_fc=simple_fc[~simple_fc['formula'].isin(specific_fc_df['formula'].tolist())]
-    
+    #____Excluding Isoprene and Toluene______________________________________________
+    iid=['InChI=1S/C5H8/c1-4-5(2)3/h4H,1-2H2,3H3',
+         'InChI=1S/C7H8/c1-7-5-3-2-4-6-7/h2-6H,1H3']
+    simple_fc=simple_fc[~simple_fc['id'].isin(iid)]
     # Rearrange columns and export to backend database.
     simple_fc=simple_fc[GrpCol(simple_fc)[1]+['id','study']]
     simple_fc.to_sql(name='bkdb_fc_calc_simple',con=engine, if_exists='replace', index=False)
