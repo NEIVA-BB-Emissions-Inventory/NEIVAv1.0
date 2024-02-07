@@ -56,16 +56,17 @@ def select_pm_data (ft, table_name):
         efcoldf['OC']=df[efcol][df['id']=='OC'].values[0]
         efcoldf['PM2.5']=df[efcol][df['id']=='PM2.5'].values[0]
         efcoldf['PM10']=df[efcol][df['id']=='PM10'].values[0]
+        efcoldf['PM1']=df[efcol][df['id']=='PM1'].values[0]
         efcoldf['PM2.5(non-pile burning)']=df[efcol][df['id']=='PM2.5_npb'].values[0]
         efcoldf['PM2.5(pile-burning)']=df[efcol][df['id']=='PM2.5_pb'].values[0]
         efcoldf['OA']=df[efcol][df['id']=='OA'].values[0]
         efcoldf['EC']=df[efcol][df['id']=='EC'].values[0]
         if ft=='crop residue':
-            fdf=efcoldf[['legend','MCE','PM2.5','PM10','PM2.5(non-pile burning)','PM2.5(pile-burning)','OC','BC','OA', 'EC']][efcoldf['fire_type']==ft].reset_index(drop=True)
+            fdf=efcoldf[['legend','MCE','PM2.5','PM1','PM10','PM2.5(non-pile burning)','PM2.5(pile-burning)','OC','BC','OA', 'EC']][efcoldf['fire_type']==ft].reset_index(drop=True)
             fdf=fdf.applymap(lambda x: rounding(x))
             return fdf
         if ft!='crop residue':
-            fdf=efcoldf[['legend','MCE','PM2.5','PM10','OA','OC','BC','EC']][efcoldf['fire_type']==ft].reset_index(drop=True)
+            fdf=efcoldf[['legend','MCE','PM2.5','PM1','PM10','OA','OC','BC','EC']][efcoldf['fire_type']==ft].reset_index(drop=True)
             fdf=fdf.applymap(lambda x: rounding(x))
             return fdf
     if table_name=='processed ef':
@@ -77,22 +78,23 @@ def select_pm_data (ft, table_name):
         efcoldf['OC']=df[efcol][df['id']=='OC'].values[0]
         efcoldf['PM2.5']=df[efcol][df['id']=='PM2.5'].values[0]
         efcoldf['PM10']=df[efcol][df['id']=='PM10'].values[0]
+        efcoldf['PM1']=df[efcol][df['id']=='PM1'].values[0]
         efcoldf['PM2.5(non-pile burning)']=df[efcol][df['id']=='PM2.5_npb'].values[0]
         efcoldf['PM2.5(pile-burning)']=df[efcol][df['id']=='PM2.5_pb'].values[0]
         efcoldf['OA']=df[efcol][df['id']=='OA'].values[0]
         efcoldf['EC']=df[efcol][df['id']=='EC'].values[0]
         if ft=='crop residue':
-            fdf=efcoldf[['legend','MCE','PM2.5','PM10','PM2.5(non-pile burning)','PM2.5(pile-burning)','OC','BC','OA', 'EC']][efcoldf['fire_type']==ft].reset_index(drop=True)
+            fdf=efcoldf[['legend','MCE','PM2.5','PM1','PM10','PM2.5(non-pile burning)','PM2.5(pile-burning)','OC','BC','OA', 'EC']][efcoldf['fire_type']==ft].reset_index(drop=True)
             fdf=fdf.applymap(lambda x: rounding(x))
             return fdf
         if ft!='crop residue':
-            fdf=efcoldf[['legend','MCE','PM2.5','PM10','OA','OC','BC','EC']][efcoldf['fire_type']==ft].reset_index(drop=True)
+            fdf=efcoldf[['legend','MCE','PM2.5','PM1','PM10','OA','OC','BC','EC']][efcoldf['fire_type']==ft].reset_index(drop=True)
             fdf=fdf.applymap(lambda x: rounding(x))
             return fdf
     if table_name=='recommended ef':
         df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
         efcol='AVG_'+ft.replace(' ','_')
-        iid=['PM<2.5','PM10','OA','OC','BC','EC']
+        iid=['PM2.5*','PM10','OA','OC','BC','EC']
         fdf=df[['compound',efcol]][df['id'].isin(iid)].reset_index(drop=True)
         fdf=fdf.applymap(lambda x: rounding(x))
         return fdf
@@ -128,7 +130,7 @@ def select_compound(ft, com_name,table_name):
                 ll=efcoldf[allcol][efcoldf['fire_type']==ft]
                 #ll=ll.sort_values(by='measurement_type')
                 ll=ll[ll['EF'].notna()]
-                ll=ll.sort_values(by='EF')
+                ll=ll.sort_values(by='EF', ascending=False)
                 ll=ll.reset_index(drop=True)
                 ll=ll.applymap(lambda x: rounding(x))
                 return ll
@@ -145,7 +147,7 @@ def select_compound(ft, com_name,table_name):
             ll=efcoldf[allcol][efcoldf['fire_type']==ft]
             #ll=ll.sort_values(by='measurement_type')
             ll=ll[ll['EF'].notna()]
-            ll=ll.sort_values(by='EF')
+            ll=ll.sort_values(by='EF', ascending=False)
             ll=ll.reset_index(drop=True)
             ll=ll.applymap(lambda x: rounding(x))
             return ll
@@ -200,6 +202,7 @@ def select_compound(ft, com_name,table_name):
                 rdf['efcol']=efcol
                 rdf['EF']=dd[efcol].iloc[ind].mean().values
                 rdf['db']=['legacy db']*len(efcol)
+                rdf=rdf.sort_values(by='EF', ascending=False).reset_index(drop=True)
                 fdf=pd.concat([fdf,rdf])
             fdf=fdf[fdf['EF'].notna()].reset_index(drop=True)
             fdf=fdf.applymap(lambda x: rounding(x))
