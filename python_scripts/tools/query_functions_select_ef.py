@@ -26,7 +26,7 @@ from sqlalchemy import text
 def get_ind(df, compound):
     if compound == 'PM2.5*':
         ind = df[df['compound'].str.contains('PM')][df['id']!='PM10'][df['id']!='PM2.5_ipcc'].index.tolist()
-    elif compound in ['PM10', 'PM1','PM2.5(PM1-PM5)','OA', 'EC', 'BC', 'OC', 'NOx_as_NO']:
+    elif compound in ['PM10', 'PM2.5','PM1','PM2.5(PM1-PM5)','OA', 'EC', 'BC', 'OC', 'NOx_as_NO']:
         ind = df[df['id'] == compound].index.tolist()
     else:
         iid = pcp.get_compounds(compound, 'name')[0].inchi
