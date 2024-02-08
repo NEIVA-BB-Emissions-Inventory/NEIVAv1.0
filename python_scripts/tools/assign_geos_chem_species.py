@@ -11,11 +11,11 @@ import numpy as np
 
 def geos_chem_species(nmog):    
     # S07 model species of unassigned compounds
-    ll_s07=['HCHO','ALK4','ALK5','BALD','CRES', 'OLE1', 'OLE2', 'RCHO', 'ARO1', 'ARO2','TERP',]
+    ll_s07=['HCHO','ALK4','ALK5','BALD','CRES', 'OLE1', 'OLE2', 'RCHO', 'ARO1', 'ARO2','TERP','MVK','MACR']
     # S18 species
     ll_s18=['FURNS','PHEN','NAPS']
     # Corresponding GEOOS_chem model species of S07
-    g_s07=['CH2O','ALK4','ALK4','BALD','CSL', 'PRPE', 'PRPE', 'RCHO', 'TOLU', 'XYLE', 'MTPO']
+    g_s07=['CH2O','ALK4','ALK4','BALD','CSL', 'PRPE', 'PRPE', 'RCHO', 'TOLU', 'XYLE', 'MTPO','MVK','MACR']
     # Corresponding GEOOS_chem model species of S18B
     g_s18=['FURA','PHEN','NAPS']
     
