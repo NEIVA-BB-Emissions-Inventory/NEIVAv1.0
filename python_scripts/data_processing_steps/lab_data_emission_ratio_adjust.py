@@ -186,10 +186,10 @@ def lab_data_adjust_to_field_conditions (df,efcoldf):
             sml_ind=lab_ind-fl_ind
             
             co2_cor=df[l][df.index.isin(fl_ind)]/df[l].iloc[co2_ind]
-            co2_cor[new_col]=round(co2_cor * fieldavg.iloc[co2_ind] ,4)
+            co2_cor[new_col]=co2_cor * fieldavg.iloc[co2_ind]
             
             co_cor=df[l][df.index.isin(sml_ind)]/df[l].iloc[co_ind]
-            co_cor[new_col]=round(co_cor * fieldavg.iloc[co_ind],4)
+            co_cor[new_col]=co_cor * fieldavg.iloc[co_ind]
             
             cor = pd.DataFrame(pd.concat([co2_cor[new_col], co_cor[new_col]]))
             cor.columns = [new_col]
