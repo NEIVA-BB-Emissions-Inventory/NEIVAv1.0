@@ -111,13 +111,13 @@ def weighted_property (dd, ft, chem):
         weighted_hc=(ef*hc).sum()/ef.sum()
         weighted_vp=(ef*vp).sum()/ef.sum()
       
-        prdf.loc[i,'ef']=totef
+        prdf.loc[i,'EF(g/kg)']=totef
         prdf.loc[i,'mole']=totmole
         prdf.loc[i,'mm']=weighted_mm
-        prdf.loc[i,'kOH']=weighted_koh
+        prdf.loc[i,'kOH(cm3/molecule sec)']=weighted_koh
         prdf.loc[i,'cstar']=weighted_cstar
-        prdf.loc[i,'vp']=weighted_vp
-        prdf.loc[i,'hc']=weighted_hc
+        prdf.loc[i,'vp(mm hg)']=weighted_vp
+        prdf.loc[i,'hc(atm m3/mole)']=weighted_hc
         
     prdf['mole_fraction']=prdf['mole']/prdf['mole'].sum()
     prdf=prdf.sort_values(by='mole_fraction', ascending=False)
@@ -145,6 +145,10 @@ def nmog_with_high_ohr (dd, ft, chem, totvoc):
     nmog=nmog.sort_values(by='ohr', ascending=False)
     nmog=nmog.reset_index(drop=True)
     nmog = nmog.applymap(lambda x: rounding(x))
-    return nmog[['mm','formula','compound',efcol, 'ohr', 'kOH', chem]][:25]
+    
+    nmog=nmog.rename(columns={'ohr':'OHR(s-1)'})
+    nmog=nmog.rename(columns={'kOH':'kOH(cm3/molecule sec)'})
+    
+    return nmog[['mm','formula','compound',efcol, 'OHR(s-1)', 'kOH(cm3/molecule sec)', chem]][:25]
     
 
