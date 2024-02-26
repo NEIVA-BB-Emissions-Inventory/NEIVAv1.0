@@ -1,4 +1,4 @@
-# Welcome to NEIVA inventory!
+# NEIVAv1.0
 
 This repository consists of a series of emission factor (EF) databases and processed datasets, including the recommended EF dataset that has EFs for over 1500 constituents averaged over laboratory and field studies organized by 14 globally relevant fuel and fire types. NEIVA is documented in …., currently under review.
 
