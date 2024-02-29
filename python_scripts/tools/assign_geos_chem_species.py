@@ -13,13 +13,13 @@ def geos_chem_species(nmog):
     # S07 model species of unassigned compounds
     ll_s07=['HCHO','ALK4','ALK5','BALD','CRES', 'OLE1', 'OLE2', \
             'RCHO', 'ARO1', 'ARO2','TERP','MVK','MACR','ACYE','PACD',\
-               'IPRD', 'BACL', 'PRD2']
+               'IPRD', 'BACL', 'PRD2', 'ALK3', 'ALK1', 'ALK2', 'RNO3', 'ROOH', 'MEK']
     # S18 species
     ll_s18=['FURNS','PHEN','NAPS']
     # Corresponding GEOOS_chem model species of S07
     g_s07=['CH2O','ALK4','ALK4','BALD','CSL', 'PRPE', \
-           'PRPE', 'RCHO', 'TOLU', 'XYLE', 'MTPO','MVK','MACR','ALK3','ALK3',\
-               'MVK', 'MGLY','MP']
+           'PRPE', 'RCHO', 'TOLU', 'XYLE', 'MTPO','MVK','MACR','ALK4','ALK4',\
+               'MVK', 'MGLY','MEK', 'ALK4', 'C2H6', 'C3H8', 'R4N2', 'MP', 'MEK']
     # Corresponding GEOOS_chem model species of S18B
     g_s18=['FURA','PHEN','NAPS']
     
@@ -50,4 +50,3 @@ def geos_chem_species(nmog):
                 nmog.loc[ii,'GEOS_chem']=g
                 
     return nmog
-
