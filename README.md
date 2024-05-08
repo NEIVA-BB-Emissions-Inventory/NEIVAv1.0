@@ -1,6 +1,6 @@
 # NEIVAv1.0
 
-This repository consists of a series of emission factor (EF) databases and processed datasets, including the recommended EF dataset that has EFs for over 1500 constituents averaged over laboratory and field studies organized by 14 globally relevant fuel and fire types. NEIVA is documented in …., currently under review.
+This repository consists of a series of emission factor (EF) databases and processed datasets, including the recommended EF dataset that has EFs for over 1500 constituents averaged over laboratory and field studies organized by 14 globally relevant fuel and fire types. NEIVA is documented in [NEIVAv1.0: Next-generation Emissions InVentory expansion of Akagi et al. version 1.0](https://egusphere.copernicus.org/preprints/2024/egusphere-2024-633/), currently under review.
 
 ### Citation
 * NEIVA is documented in: (link). We ask that if you use this inventory, you cite this paper.
