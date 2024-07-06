@@ -1,4 +1,5 @@
 # NEIVAv1.0
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12675193.svg)](https://doi.org/10.5281/zenodo.12675193)
 
 This repository consists of a series of emission factor (EF) databases and processed datasets, including the recommended EF dataset that has EFs for over 1500 constituents averaged over laboratory and field studies organized by 14 globally relevant fuel and fire types. NEIVA is documented in [NEIVAv1.0: Next-generation Emissions InVentory expansion of Akagi et al. version 1.0](https://egusphere.copernicus.org/preprints/2024/egusphere-2024-633/), currently under review.
 
