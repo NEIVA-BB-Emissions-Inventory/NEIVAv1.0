@@ -235,7 +235,7 @@ def select_chemical_formula (ft, formula,table_name):
         df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
         df=df.applymap(lambda x: rounding(x))
         if isinstance(ft, list):
-          cols = ['AVG_' + s for s in ft]
+          cols = ['AVG_' + s.replace(' ','_') for s in ft]
         elif ft.lower()=='all':
           cols = df.columns[df.columns.str.contains('AVG_')]
         else:
