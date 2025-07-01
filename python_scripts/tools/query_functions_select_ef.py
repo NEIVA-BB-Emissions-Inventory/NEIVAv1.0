@@ -234,8 +234,13 @@ def select_chemical_formula (ft, formula,table_name):
         output_db=connect_db('neiva_output_db')
         df=pd.read_sql(text('select * from Recommended_EF'), con=output_db)
         df=df.applymap(lambda x: rounding(x))
-        col='AVG_'+ft.replace(' ','_')
-        return df[['mm','formula', 'compound',col, 'id']][df['formula']==formula].reset_index(drop=True)
+        if isinstance(ft, list):
+          cols = ['AVG_' + s for s in ft]
+        elif ft.lower()=='all':
+          cols = df.columns[df.columns.str.contains('AVG_')]
+        else:
+          cols = ['AVG_'+ft.replace(' ','_')]        
+        return df[['mm','formula', 'compound','id']+list(cols)][df['formula']==formula].reset_index(drop=True)
     
 
 def abundant_nmog (ft, chem, aa):
