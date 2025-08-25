@@ -4,7 +4,7 @@
 This repository consists of a series of emission factor (EF) databases and processed datasets, including the recommended EF dataset that has EFs for over 1500 constituents averaged over laboratory and field studies organized by 14 globally relevant fuel and fire types. NEIVA is documented in [NEIVAv1.0: Next-generation Emissions InVentory expansion of Akagi et al. version 1.0](https://gmd.copernicus.org/articles/17/7679/2024/).
 
 ### Citation
-* NEIVA is documented in: [NEIVAv1.0: Next-generation Emissions InVentory expansion of Akagi et al. version 1.0](https://gmd.copernicus.org/articles/17/7679/2024/). We ask that if you use this inventory, you cite this paper.
+* NEIVA is documented in: [NEIVAv1.0: Next-generation Emissions InVentory expansion of Akagi et al. version 1.0](https://gmd.copernicus.org/articles/17/7679/2024/). We ask that if you use this inventory, or the associated Python scripts, you cite this paper.
 * If you would like, we encourage you to add any papers citing to our NEIVA papers list.
  [NEIVA papers list](https://docs.google.com/spreadsheets/d/1uXLA59hYS1TJNgUj3USroiDX7IaCfrBNx_SZjSJkd6Q/edit#gid=0)
 
